@@ -10439,6 +10439,9 @@ em.space {
 #btnOpenTMap,#btnOpenKakaoNavi{display:none!important}.section6 .navi .map_btn.naver{width:100%!important;flex:1}
 .section6 .locate_name{font-size:20px!important;line-height:1.7}.section4 .c_location{line-height:1.8}.section4 .img_box{display:none!important}
 .section12 [var="greetingContent"]{line-height:2.1}
+/* 달력 예식일 표시: 동그라미 대신 하트 */
+.section4 .table_wrap.type_2 table tbody tr td.active::before,
+.section4 .table_wrap table tbody td.active::before{width:40px;height:40px;border-radius:0;box-shadow:none;background:rgb(228,36,48);-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E");-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain}
 #p_rsvp,.modal_rsvp,.modal_interview,.modal_board,.modal_photo{display:none!important}
 /* 사진 스트립 (photos/ 폴더 기반) */
 .section_photos{padding:var(--section-margin)}
