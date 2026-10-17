@@ -13154,7 +13154,14 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
     // IntersectionObserver 가 없으면 효과 없이 그냥 보여준다.
     if (!('IntersectionObserver' in window)) { showAll(); return; }
 
-    targets.forEach(function (el) { el.classList.add('reveal'); });
+    // 숨기는 순간에는 전이를 끈다. 켜둔 채로 .reveal 을 붙이면 이미 그려진 요소가
+    // 0.7초에 걸쳐 사라져서, 잠깐 보였다가 없어지는 것처럼 보인다.
+    targets.forEach(function (el) {
+        el.style.setProperty('transition', 'none', 'important');
+        el.classList.add('reveal');
+    });
+    void document.documentElement.offsetHeight;   // 강제 리플로우로 숨김 상태를 확정
+    targets.forEach(function (el) { el.style.removeProperty('transition'); });
 
     var io = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
