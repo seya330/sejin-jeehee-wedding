@@ -10506,7 +10506,8 @@ em.space {
 @media (prefers-reduced-motion:reduce){.photo_scroll .photo_item:not(.is_loaded){animation:none}}
 
 /* 사진 크게 보기 */
-.photo_viewer{position:fixed;top:0;left:0;width:100%;height:100%;z-index:2000;background:#000;font-family:var(--font-family,GowunDodum-Regular,serif)}
+/* touch-action:none: 뷰어 위에서 시작한 터치로 뒤 페이지가 스크롤되지 않게 한다. 뒤 페이지(body)는 고정하지 않는다 */
+.photo_viewer{position:fixed;top:0;left:0;width:100%;height:100%;z-index:2000;background:#000;font-family:var(--font-family,GowunDodum-Regular,serif);touch-action:none}
 .photo_viewer[hidden]{display:none}
 .photo_viewer *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 /* touch-action:pan-x: 좌우 넘기기는 브라우저 스크롤에 맡기고, 세로 움직임은 스크립트(아래로 끌어 닫기)가 받는다 */
@@ -13039,7 +13040,6 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
     if (!photos.length) return;
 
     var current = 0;
-    var lockedY = 0;
     var zoomed = false;
     var built = false;
 
@@ -13118,11 +13118,13 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         countBox.textContent = (current + 1) + ' / ' + photos.length;
     }
 
+    /* 열고 닫을 때 뒤 페이지는 건드리지 않는다. body 를 position:fixed 로 고정했다가 닫을 때 풀고
+       스크롤을 되돌리면, 그 순간 페이지가 다시 배치되면서(모바일은 주소창까지 바뀌며) 깜빡인다.
+       대신 뷰어 위에서 일어나는 스크롤만 막는다. 터치는 CSS touch-action, 휠과 키는 아래에서 막는다. */
     function open(i) {
         build();
         current = i;
         viewer.hidden = false;
-        lockScroll();
         loadNear(i);
         track.scrollLeft = track.clientWidth * i;
         updateCount();
@@ -13134,11 +13136,7 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         pull = null;
         clearPull();
         viewer.hidden = true;
-        unlockScroll();
         document.removeEventListener('keydown', onKey);
-        // 닫은 사진에 하단 목록을 맞춘다.
-        var item = scroll.children[current];
-        if (item) scroll.scrollLeft += item.getBoundingClientRect().left - scroll.getBoundingClientRect().left - 24;
     }
 
     function go(i) {
@@ -13147,30 +13145,26 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         track.scrollTo({ left: track.clientWidth * i, behavior: 'smooth' });
     }
 
-    function lockScroll() {
-        lockedY = window.pageYOffset || document.documentElement.scrollTop || 0;
-        document.body.style.position = 'fixed';
-        document.body.style.top = -lockedY + 'px';
-        document.body.style.width = '100%';
+    // 하단 목록을 지금 보는 사진에 맞춘다. 닫을 때 맞추면 그 순간 목록이 움직여 보이므로,
+    // 뷰어가 가리고 있는 동안 사진을 넘길 때 맞춘다. 열고 그대로 닫으면 목록은 처음 그대로다.
+    function alignStrip() {
+        var item = scroll.children[current];
+        if (item) scroll.scrollLeft += item.getBoundingClientRect().left - scroll.getBoundingClientRect().left - 24;
     }
 
-    function unlockScroll() {
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        // 템플릿이 html 에 scroll-behavior:smooth 를 걸어 두어서, 그대로 두면 맨 위에서 원래 자리까지
-        // 굴러 내려온다. 되돌릴 때만 잠시 끄고 바로 옮긴다. 같은 작업 안이라 그 사이 화면은 그려지지 않는다.
-        var root = document.documentElement;
-        root.style.scrollBehavior = 'auto';
-        window.scrollTo(0, lockedY);
-        root.style.scrollBehavior = '';
-    }
-
+    var SCROLL_KEYS = { ' ': 1, PageUp: 1, PageDown: 1, Home: 1, End: 1, ArrowUp: 1, ArrowDown: 1 };
     function onKey(e) {
         if (e.key === 'Escape') close();
         else if (e.key === 'ArrowRight') go(current + 1);
         else if (e.key === 'ArrowLeft') go(current - 1);
+        else if (SCROLL_KEYS[e.key]) e.preventDefault();  // 뒤 페이지가 키보드로 스크롤되지 않게 한다
     }
+
+    // 뒤 페이지가 휠로 스크롤되지 않게 한다. 확대하지 않았을 때 가로 휠(트랙패드 좌우 밀기)은 사진 넘기기에 둔다.
+    viewer.addEventListener('wheel', function (e) {
+        if (!zoomed && Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+        e.preventDefault();
+    }, { passive: false });
 
     track.addEventListener('scroll', function () {
         if (zoomed) return;
@@ -13179,6 +13173,7 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         current = i;
         updateCount();
         loadNear(i);
+        alignStrip();
     });
 
     closeBtn.addEventListener('click', close);
