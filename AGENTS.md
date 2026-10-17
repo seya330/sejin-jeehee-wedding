@@ -21,9 +21,10 @@ assets/            # index.html 에서 빼낸 큰 자산. 비동기로 불러온
   map.jpg          #   오시는 길 약도
   fonts/           #   GowunDodum, 나눔명조, xeicon(아이콘 폰트)
   template/        #   꺼진 섹션의 템플릿 샘플 이미지 (받지 않는다, 아래 참고)
-photos/            # 하단 사진 스트립에 쓰는 사진 (여기에 넣는다)
+photos/            # 하단 사진 스트립에 쓰는 사진. 줄인 사본만 넣는다 (긴 변 1600px, 장당 500KB 이하)
 photos/photos.js   # 사진 목록. update-photos.sh 가 생성한다. 직접 고치지 않는다.
-update-photos.sh   # photos/ 를 훑어 photos.js 를 다시 만든다.
+photos_original/   # 사진 원본 보관 (.gitignore 처리, 저장소에 포함하지 않음)
+update-photos.sh   # photos/ 를 훑어 photos.js 를 다시 만든다. 한글 파일 이름은 NFC 로 맞춘다.
 qr/                # QR 이미지 (.gitignore 처리, 저장소에 포함하지 않음)
 ```
 

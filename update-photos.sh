@@ -20,13 +20,23 @@ else
   SORT="sort -f"
 fi
 
+# macOS 는 한글 파일 이름을 NFD(자모 분리)로 돌려주는데, git 은 NFC 로 저장한다.
+# NFD 이름을 그대로 쓰면 로컬에서는 보여도 GitHub Pages 에서는 404 가 난다. 목록을 NFC 로 맞춘다.
+nfc() {
+  if command -v python3 >/dev/null 2>&1; then
+    python3 -c 'import sys, unicodedata; sys.stdout.write(unicodedata.normalize("NFC", sys.stdin.read()))'
+  else
+    cat
+  fi
+}
+
 tmp="$(mktemp)"
 trap 'rm -f "$tmp"' EXIT
 
 find "$DIR" -maxdepth 1 -type f \
   \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \
      -o -iname '*.webp' -o -iname '*.gif' -o -iname '*.avif' \) \
-  | sed "s|^$DIR/||" | $SORT > "$tmp"
+  | sed "s|^$DIR/||" | nfc | $SORT > "$tmp"
 
 {
   echo "// update-photos.sh 가 만드는 파일입니다. 직접 고치지 않습니다."
