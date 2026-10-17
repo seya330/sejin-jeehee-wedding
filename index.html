@@ -13274,4 +13274,58 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
     }, 30000);
 })();
 </script>
+<script>
+/* 배경음악 준비 안내
+   템플릿은 자동재생이 막히면 곧바로 bgm.openGuide() 로 "배경음악이 준비 되었습니다" 를 띄운다.
+   음악을 assets/bgm.mp3 로 빼고 preload="none" 으로 둔 뒤로는 그 시점에 받아 둔 것이 없으므로,
+   파일을 다 받은 뒤에 띄우도록 openGuide 를 감싼다. 템플릿의 $(function) 보다 먼저 실행되어야 한다.
+
+   preload 나 canplaythrough 로 기다리지 않고 fetch 로 받는다. iOS Safari 는 사용자가 누르기 전에는
+   미디어를 미리 받지 않아서 canplaythrough 가 오지 않는다. 받은 파일은 blob URL 로 audio 에 꽂아
+   두어 누르면 바로 나온다. */
+(function () {
+    var audio = document.getElementById('bgm');
+    if (!audio || typeof bgm === 'undefined') return;
+
+    var ready = false;
+    var guideWanted = false;
+    var openGuide = bgm.openGuide;
+
+    bgm.openGuide = function () {
+        if (ready) return openGuide.apply(this, arguments);
+        bgm.stop();          // 버튼은 원래처럼 바로 '꺼짐' 모양으로 둔다
+        guideWanted = true;  // 안내 문구는 다 받은 뒤에 띄운다
+    };
+
+    function markReady() {
+        if (ready) return;
+        ready = true;
+        // 그 사이에 직접 눌러 재생했다면 안내할 필요가 없다
+        if (guideWanted && audio.paused) openGuide();
+    }
+
+    function preload() {
+        var source = audio.querySelector('source');
+        var url = source && source.src;
+        // 자동재생이 됐거나 이미 눌러서 재생 중이면 audio 가 받고 있으므로 따로 받지 않는다.
+        if (!audio.paused || !url || !window.fetch) { markReady(); return; }
+        fetch(url)
+            .then(function (res) {
+                if (!res.ok) throw new Error('bgm ' + res.status);
+                return res.blob();
+            })
+            .then(function (blob) {
+                // 이미 재생을 시작했으면 소스를 바꾸지 않는다. 바꾸면 처음부터 다시 나온다.
+                if (audio.paused && audio.currentTime === 0) audio.src = URL.createObjectURL(blob);
+                markReady();
+            })
+            // file:// 로 열면 fetch 가 막힌다. 그때는 예전처럼 바로 안내한다.
+            .catch(markReady);
+    }
+
+    // 사진과 폰트가 먼저 오도록 페이지 load 뒤에 받기 시작한다.
+    if (document.readyState === 'complete') preload();
+    else window.addEventListener('load', preload);
+})();
+</script>
 </html>
