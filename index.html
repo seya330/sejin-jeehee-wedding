@@ -10453,9 +10453,13 @@ em.space {
 :root{--heart-img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23cf000e' d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E")}
 .section4 .table_wrap.type_2 table tbody tr td.active::before,
 .section4 .table_wrap table tbody td.active::before{width:36px;height:36px;border-radius:0;box-shadow:none;background:var(--heart-img) no-repeat center/contain}
+.section4 .table_wrap table tbody tr td.active{isolation:isolate}
 /* 디데이 카운터는 ::after 로 Days/Hours 라벨을 그리므로 span 자체를 건드리면 라벨까지 영향을 받는다.
    하트는 ::before 로 뒤에 깔고 원래 배경만 지운다. */
-.section4 .d_day .calc span{background:transparent;box-shadow:none;border-radius:0}
+/* isolation 이 필요하다. 하트는 z-index:-1 로 글자 뒤에 깔리는데, span 이 쌓임 맥락이
+   아니면 조상의 배경 뒤까지 내려가서 보이지 않는다. 등장 전이 중에는 부모 opacity 가
+   1 미만이라 쌓임 맥락이 생겨 보이다가, 전이가 끝나면 사라지던 원인이다. */
+.section4 .d_day .calc span{background:transparent;box-shadow:none;border-radius:0;isolation:isolate}
 .section4 .d_day .calc span::before{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:-1;width:64px;height:64px;background:var(--heart-img) no-repeat center/contain;-webkit-filter:drop-shadow(0 3px 4px rgba(0,0,0,.3));filter:drop-shadow(0 3px 4px rgba(0,0,0,.3))}
 @media (max-width:295px){.section4 .d_day .calc span::before{width:50px;height:50px}}
 /* 달력과 카운트다운 숫자는 명조체로. GowunDodum 숫자가 너무 밋밋하다. */
