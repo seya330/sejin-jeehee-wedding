@@ -12820,8 +12820,51 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
     var closeBtn = document.getElementById('photoViewerClose');
     if (!strip || !scroll || !viewer || !track) return;
 
+    /* 마우스로도 좌우로 끌 수 있게 한다. 터치는 브라우저 기본 스크롤을 그대로 쓴다. */
+    function enableMouseDrag(el, blocked) {
+        var down = false, startX = 0, startLeft = 0, moved = 0;
+
+        el.addEventListener('pointerdown', function (e) {
+            if (e.pointerType === 'touch' || e.button !== 0) return;
+            if (blocked && blocked()) return;
+            down = true;
+            moved = 0;
+            startX = e.clientX;
+            startLeft = el.scrollLeft;
+            el.classList.add('is_dragging');
+        });
+
+        window.addEventListener('pointermove', function (e) {
+            if (!down) return;
+            var dx = e.clientX - startX;
+            moved = Math.max(moved, Math.abs(dx));
+            el.scrollLeft = startLeft - dx;
+            e.preventDefault();
+        });
+
+        function end() {
+            if (!down) return;
+            down = false;
+            el.classList.remove('is_dragging');
+        }
+        // 창 밖에서 버튼을 떼도 끌림 상태로 남지 않게 한다.
+        window.addEventListener('pointerup', end);
+        window.addEventListener('pointercancel', end);
+        window.addEventListener('blur', end);
+
+        // 끌고 난 뒤 이어지는 click 은 무시한다. 드래그가 사진 열기나 닫기로 이어지면 안 된다.
+        el.addEventListener('click', function (e) {
+            if (moved <= 6) return;
+            moved = 0;
+            e.stopPropagation();
+            e.preventDefault();
+        }, true);
+    }
+
+    enableMouseDrag(scroll);
+
     var photos = Array.isArray(window.WEDDING_PHOTOS) ? window.WEDDING_PHOTOS.filter(Boolean) : [];
-    // 사진이 아직 없으면 마크업에 있는 스켈레톤을 그대로 둔다.
+    // 사진이 아직 없으면 마크업에 있는 스켈레톤을 그대로 둔다. 끌어보는 것은 된다.
     if (!photos.length) return;
 
     var current = 0;
@@ -12863,44 +12906,6 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         hint.classList.add('is_ready');
     })();
 
-    /* 마우스로도 좌우로 끌 수 있게 한다. 터치는 브라우저 기본 스크롤을 그대로 쓴다. */
-    function enableMouseDrag(el, blocked) {
-        var down = false, startX = 0, startLeft = 0, moved = 0;
-
-        el.addEventListener('pointerdown', function (e) {
-            if (e.pointerType === 'touch' || e.button !== 0) return;
-            if (blocked && blocked()) return;
-            down = true;
-            moved = 0;
-            startX = e.clientX;
-            startLeft = el.scrollLeft;
-            el.classList.add('is_dragging');
-        });
-
-        window.addEventListener('pointermove', function (e) {
-            if (!down) return;
-            var dx = e.clientX - startX;
-            moved = Math.max(moved, Math.abs(dx));
-            el.scrollLeft = startLeft - dx;
-            e.preventDefault();
-        });
-
-        window.addEventListener('pointerup', function () {
-            if (!down) return;
-            down = false;
-            el.classList.remove('is_dragging');
-        });
-
-        // 끌고 난 뒤 이어지는 click 은 무시한다. 드래그가 사진 열기나 닫기로 이어지면 안 된다.
-        el.addEventListener('click', function (e) {
-            if (moved <= 6) return;
-            moved = 0;
-            e.stopPropagation();
-            e.preventDefault();
-        }, true);
-    }
-
-    enableMouseDrag(scroll);
     enableMouseDrag(track, function () { return zoomed; });
 
     /* 크게 보기 */
