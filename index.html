@@ -13158,6 +13158,18 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
     void document.documentElement.offsetHeight;   // 강제 리플로우로 숨김 상태를 확정
     pending.forEach(function (el) { el.style.removeProperty('transition'); });
 
+    // 한 번 나타난 요소는 다시 숨지 않아야 한다. 전이가 끝났을 시점에 실제로 보이는지
+    // 확인하고, 아니면 인라인으로 못박는다. 템플릿 쪽에서 되돌리는 경우를 대비한 보호 장치다.
+    function reveal(el) {
+        el.classList.add('is_in');
+        setTimeout(function () {
+            if (parseFloat(getComputedStyle(el).opacity) < 0.99) {
+                el.style.setProperty('opacity', '1', 'important');
+                el.style.setProperty('transform', 'none', 'important');
+            }
+        }, 1200);
+    }
+
     function check() {
         var vh = window.innerHeight || document.documentElement.clientHeight;
         for (var i = pending.length - 1; i >= 0; i--) {
@@ -13165,7 +13177,7 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
             var r = el.getBoundingClientRect();
             if (r.height === 0) continue;          // 아직 내용이 안 채워진 블록은 다음 기회에
             if (r.top >= vh * TRIGGER) continue;   // 음수면 이미 지나친 것이므로 함께 통과
-            el.classList.add('is_in');
+            reveal(el);
             pending.splice(i, 1);
         }
         if (!pending.length) stop();
@@ -13200,7 +13212,7 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
     check();
     poll = setInterval(check, 400);
     setTimeout(function () {
-        pending.slice().forEach(function (el) { el.classList.add('is_in'); });
+        pending.slice().forEach(reveal);
         pending.length = 0;
         stop();
     }, 30000);
