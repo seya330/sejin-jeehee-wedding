@@ -64,11 +64,44 @@ qr/                # QR 이미지 (.gitignore 처리, 저장소에 포함하지 
 오시는 길과 맺음말 사이에 들어가는 직접 만든 섹션입니다. 템플릿 기본 갤러리(section5)와는 별개이고,
 Swiper 같은 외부 라이브러리를 쓰지 않습니다.
 
-사진을 넣는 순서는 이렇습니다.
+### 사진 올리는 법
 
-1. `photos/` 에 이미지를 넣는다.
-2. `./update-photos.sh` 를 실행한다.
-3. `photos/photos.js` 가 다시 만들어진다. 파일 이름 순으로 노출된다.
+원본을 `photos/` 에 바로 넣지 않습니다. 원본은 장당 수 MB 라서 모바일에서 무겁고,
+저장소가 공개라 한 번 커밋하면 지워도 git 기록에 남습니다.
+
+1. 원본을 `photos_original/` 에 넣습니다. 이 폴더는 `.gitignore` 처리되어 저장소에 올라가지 않습니다.
+2. 저장소 루트에서 줄인 사본을 `photos/` 에 만듭니다. 긴 변 1600px, JPEG 품질 82 입니다.
+   ```bash
+   for f in photos_original/*.jpg; do
+     sips -Z 1600 -s format jpeg -s formatOptions 82 "$f" --out "photos/$(basename "$f")"
+   done
+   ```
+   새로 넣은 사진만 처리하려면 `photos_original/` 의 해당 파일만 지정합니다.
+3. 500KB 를 넘는 파일이 있는지 확인합니다.
+   ```bash
+   find photos -name '*.jpg' -size +500k
+   ```
+   나오면 그 파일만 긴 변을 1440px 로 줄이고 품질을 낮춰 다시 만듭니다. 1600px 에서 품질만 58 까지
+   내리는 것보다 1440px 품질 66~78 이 눈으로 보기에 낫습니다. 500KB 아래로 내려올 때까지
+   `formatOptions` 를 78 → 74 → 70 → 66 순으로 낮춥니다.
+   ```bash
+   sips -Z 1440 -s format jpeg -s formatOptions 74 "photos_original/<파일명>" --out "photos/<파일명>"
+   ```
+4. `./update-photos.sh` 를 실행합니다. `photos/photos.js` 가 다시 만들어집니다.
+5. 브라우저로 `index.html` 을 열어 사진 섹션과 크게 보기를 확인합니다.
+6. `photos/` 와 `photos/photos.js` 를 함께 커밋합니다. push 하면 GitHub Pages 에 반영됩니다.
+
+알아둘 점입니다.
+
+- 노출 순서는 파일 이름 순입니다. 순서를 바꾸려면 `01-...`, `02-...` 처럼 앞에 숫자를 붙입니다.
+- 사진을 빼려면 `photos/` 에서 지우고 `./update-photos.sh` 를 다시 실행합니다.
+- 카드는 3:4 비율이라 가로 사진은 가운데 기준으로 잘려 보입니다. 크게 보기에서는 전체가 보입니다.
+- 한글 파일 이름을 그대로 써도 됩니다. macOS 는 한글 이름을 NFD(자모 분리)로 돌려주고 git 은 NFC 로
+  저장하는데, `update-photos.sh` 가 목록을 NFC 로 맞춥니다. 이 처리를 빼면 로컬에서는 보여도
+  GitHub Pages 에서 404 가 납니다.
+- `photos.js` 는 손으로 고치지 않습니다. 스크립트를 다시 돌리면 덮어씁니다.
+
+### 동작
 
 사진이 없으면 `photos.js` 가 빈 배열이 되고, 섹션은 스켈레톤 카드 3개와
 "사진을 준비하고 있습니다" 문구를 보여줍니다. 섹션이 사라지지는 않습니다.
