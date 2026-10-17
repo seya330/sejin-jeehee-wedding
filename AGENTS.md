@@ -14,7 +14,7 @@
 빌드 도구와 의존성이 없는 정적 파일 프로젝트입니다.
 
 ```
-index.html         # 전체 청첩장 (HTML + CSS + JS + 작은 base64 아이콘, 약 1.1MB / 13,000줄)
+index.html         # 전체 청첩장 (HTML + CSS + JS + 작은 base64 아이콘·폰트, 약 1.1MB / 13,000줄)
 assets/            # index.html 에서 빼낸 큰 자산. 비동기로 불러온다.
   bgm.mp3          #   배경음악
   main.jpg         #   메인 사진. og:image 도 이 파일을 절대 URL 로 가리킨다.
@@ -36,7 +36,7 @@ qr/                # QR 이미지 (.gitignore 처리, 저장소에 포함하지 
 
 통째로 읽으면 컨텍스트가 낭비됩니다.
 
-- base64 줄(5,000자 이상)이 23개 남아 있습니다. 구조를 볼 때는 긴 줄을 걸러냅니다.
+- base64 줄(5,000자 이상)이 24개 남아 있습니다. 구조를 볼 때는 긴 줄을 걸러냅니다.
   ```bash
   awk 'length($0)<300' index.html | grep -nE '<section|<h2|var='
   ```
@@ -157,7 +157,7 @@ HTML 을 끝까지 받아야 스크립트가 돌았으므로, "배경음악이 �
   head 에 둔 `imgReady(this)` 를 불러 `.is_loaded` 를 붙입니다. 실패해도 붙여서 무한히 돌지 않게 합니다.
 - img 에 `width`/`height` 를 꼭 적습니다. 그래야 받기 전에도 자리를 잡아 스켈레톤이 보이고 레이아웃이 밀리지 않습니다.
 - 하트는 `--heart-img` 변수를 그대로 씁니다. 색을 바꾸면 달력·디데이 하트와 함께 바뀝니다.
-- CSS 위치: 마지막 `<style>` 블록 끝, `/* 이미지 스켈레톤` 주석 아래
+- CSS 위치: 마지막 `<style>` 블록, `/* 이미지 스켈레톤` 주석 아래
 
 ### 꺼진 섹션의 템플릿 이미지
 
@@ -165,6 +165,28 @@ HTML 을 끝까지 받아야 스크립트가 돌았으므로, "배경음악이 �
 `src` 가 아니라 `data-src` 로 걸어 두어 받지 않습니다. 템플릿의 Swiper 가 숨은 섹션에서도 초기화되면서
 `preloadImages` 와 슬라이드 복제로 이미지를 미리 받아버리기 때문입니다.
 섹션을 다시 켤 때는 실제 사진으로 바꾸고 `src` 로 되돌립니다.
+
+## 첫 화면 오버레이
+
+처음 열거나 새로고침하면 화면 전체를 맺음말 배경색 rgb(252, 241, 242)으로 덮고
+"We are / getting / married" 를 세 줄로 띄웁니다. 0.5초 그대로 두었다가 1초 동안 사라집니다(전체 1.5초).
+
+- 스크립트 없이 CSS 애니메이션(`introFade`)만 씁니다. 스크립트가 늦거나 죽어도 화면을 가린 채 남지 않습니다.
+  끝나면 `visibility:hidden` 이 되어 터치를 막지 않습니다.
+- 글씨는 메인 사진의 "Our wedding day" 에 맞췄습니다. 사진 속 글씨는 이미지라 원래 폰트를 알 수 없습니다.
+  무료 필기체 후보를 렌더링해 비교하고 가장 비슷한 WindSong(OFL, Google Fonts)을 골랐습니다.
+  색 rgb(218, 42, 52)는 사진의 획에서 뽑은 값입니다.
+- 폰트는 문구의 글자(W a d e g i m n r t, 공백)만 담은 4KB woff2 서브셋을 base64 로 넣었습니다.
+  첫 화면에 바로 보여야 하기 때문입니다. 폰트 이름은 `WindSong-Intro` 입니다.
+- 문구를 바꾸면 새 글자가 서브셋에 없어서 다른 폰트로 보입니다. 서브셋을 다시 받아 `@font-face` 의 base64 를 바꿉니다.
+  Google Fonts 는 `text=` 에 넣은 글자만 담은 폰트를 줍니다. UA 를 크롬으로 줘야 woff2 주소가 나옵니다.
+  ```bash
+  curl -sA 'Mozilla/5.0 (Macintosh) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36' \
+    'https://fonts.googleapis.com/css2?family=WindSong&text=We%20are%20getting%20married'
+  # 출력된 src: url(...) 의 woff2 를 받아 base64 로 바꾼다
+  ```
+- `#user_wrap` 의 `overflow:hidden` 에 잘리지 않도록 마크업은 `<body>` 바로 아래, `#user_wrap` 앞에 둡니다.
+- CSS 위치: 마지막 `<style>` 블록 끝, `/* 첫 화면 오버레이` 주석 아래
 
 ## 스크롤 등장 효과
 
