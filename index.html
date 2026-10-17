@@ -10435,7 +10435,14 @@ em.space {
 .personalized_ending{padding:65px 25px!important;text-align:center;background:#f5f3ed}
 .personalized_ending h2{font-size:20px;margin:0 0 20px}.personalized_ending p{line-height:1.9}
 .section3 .relation_con{margin-top:24px!important}.section3 .name_con{margin-top:0!important}
-.section6,.section6 [aos],.section4 [aos]{opacity:1!important;transform:none!important;visibility:visible!important}
+/* 스크롤 등장 효과
+   템플릿 AOS 는 섹션마다 동작이 들쭉날쭉해서(.section4 는 아예 숨은 채로 남았다)
+   상태를 전부 끄고 아래 .reveal 하나로 일원화한다.
+   .reveal 은 자바스크립트가 붙이므로 스크립트가 죽어도 내용이 사라지지 않는다. */
+#user_wrap section,#user_wrap [aos],#user_wrap [data-aos]{opacity:1;transform:none;visibility:visible;transition:none}
+#user_wrap .reveal{opacity:0!important;transform:translate3d(0,28px,0)!important;transition:opacity .7s cubic-bezier(.22,.61,.36,1),transform .7s cubic-bezier(.22,.61,.36,1)!important}
+#user_wrap .reveal.is_in{opacity:1!important;transform:none!important}
+@media (prefers-reduced-motion:reduce){#user_wrap .reveal,#user_wrap .reveal.is_in{opacity:1!important;transform:none!important;transition:none!important}}
 #btnOpenTMap,#btnOpenKakaoNavi{display:none!important}.section6 .navi .map_btn.naver{width:100%!important;flex:1}
 .section6 .locate_name{font-size:20px!important;line-height:1.7}.section4 .c_location{line-height:1.8}.section4 .img_box{display:none!important}
 .section12 [var="greetingContent"]{line-height:2.1}
@@ -13106,6 +13113,58 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         if (e.target.tagName === 'IMG') return;
         close();
     });
+})();
+</script>
+<script>
+/* 섹션 등장 효과: 아래에서 위로 올라오며 서서히 나타난다.
+   그룹 안의 항목은 순서대로 조금씩 늦게 나타난다. */
+(function () {
+    var GROUPS = [
+        ['.section12 .contents'],
+        ['.section3 .name_con', '.section3 .introduce_con', '.section3 .relation_con'],
+        ['.section4 .table_wrap', '#dday_box'],
+        ['.section6 .title', '.section6 .top_box', '.section6 .map', '.section6 .transportation'],
+        ['.section_photos .title', '.section_photos .photo_hint', '.section_photos .photo_scroll'],
+        ['.section11 .inner']
+    ];
+    var STEP = 90;
+
+    var targets = [];
+    GROUPS.forEach(function (group) {
+        group.forEach(function (sel, i) {
+            var el = document.querySelector(sel);
+            if (!el) return;
+            // 템플릿 AOS 가 같은 속성을 건드리지 않도록 표식을 뗀다.
+            el.removeAttribute('aos');
+            el.removeAttribute('data-aos');
+            el.classList.remove('aos-init', 'aos-animate');
+            el.style.transitionDelay = (i * STEP) + 'ms';
+            targets.push(el);
+        });
+    });
+    if (!targets.length) return;
+
+    function showAll() {
+        targets.forEach(function (el) {
+            el.style.transitionDelay = '';
+            el.classList.add('reveal', 'is_in');
+        });
+    }
+
+    // IntersectionObserver 가 없으면 효과 없이 그냥 보여준다.
+    if (!('IntersectionObserver' in window)) { showAll(); return; }
+
+    targets.forEach(function (el) { el.classList.add('reveal'); });
+
+    var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+            if (!e.isIntersecting) return;
+            e.target.classList.add('is_in');
+            io.unobserve(e.target);
+        });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0 });
+
+    targets.forEach(function (el) { io.observe(el); });
 })();
 </script>
 </html>
