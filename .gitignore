@@ -3,3 +3,7 @@ qr/
 serve.py
 _debug.html
 photos_original/
+
+# 첫 화면 손글씨 SVG 생성 도구의 작업 파일
+tools/intro_write/.venv/
+tools/intro_write/out/

@@ -14,7 +14,7 @@
 빌드 도구와 의존성이 없는 정적 파일 프로젝트입니다.
 
 ```
-index.html         # 전체 청첩장 (HTML + CSS + JS + 작은 base64 아이콘·폰트, 약 1.1MB / 13,000줄)
+index.html         # 전체 청첩장 (HTML + CSS + JS + 작은 base64 아이콘, 약 1.1MB / 13,000줄)
 assets/            # index.html 에서 빼낸 큰 자산. 비동기로 불러온다.
   bgm.mp3          #   배경음악
   main.jpg         #   메인 사진. og:image 도 이 파일을 절대 URL 로 가리킨다.
@@ -25,6 +25,7 @@ photos/            # 하단 사진 스트립에 쓰는 사진. 줄인 사본만 
 photos/photos.js   # 사진 목록. update-photos.sh 가 생성한다. 직접 고치지 않는다.
 photos_original/   # 사진 원본 보관 (.gitignore 처리, 저장소에 포함하지 않음)
 update-photos.sh   # photos/ 를 훑어 photos.js 를 다시 만든다. 한글 파일 이름은 NFC 로 맞춘다.
+tools/intro_write/ # 첫 화면 손글씨 SVG 를 만드는 도구. 페이지가 쓰지 않는 개발용 파일이다 (아래 "첫 화면 오버레이")
 qr/                # QR 이미지 (.gitignore 처리, 저장소에 포함하지 않음)
 ```
 
@@ -36,7 +37,7 @@ qr/                # QR 이미지 (.gitignore 처리, 저장소에 포함하지 
 
 통째로 읽으면 컨텍스트가 낭비됩니다.
 
-- base64 줄(5,000자 이상)이 24개 남아 있습니다. 구조를 볼 때는 긴 줄을 걸러냅니다.
+- base64 줄(5,000자 이상)이 23개 남아 있습니다. 구조를 볼 때는 긴 줄을 걸러냅니다.
   ```bash
   awk 'length($0)<300' index.html | grep -nE '<section|<h2|var='
   ```
@@ -168,25 +169,49 @@ HTML 을 끝까지 받아야 스크립트가 돌았으므로, "배경음악이 �
 
 ## 첫 화면 오버레이
 
-처음 열거나 새로고침하면 화면 전체를 맺음말 배경색 rgb(252, 241, 242)으로 덮고
-"We are / getting / married" 를 세 줄로 띄웁니다. 0.5초 그대로 두었다가 1초 동안 사라집니다(전체 1.5초).
+처음 열거나 새로고침하면 흰 화면이 전체를 덮고, "We are / getting / married" 를 세 줄로 손글씨처럼 써 나갑니다.
 
-- 스크립트 없이 CSS 애니메이션(`introFade`)만 씁니다. 스크립트가 늦거나 죽어도 화면을 가린 채 남지 않습니다.
-  끝나면 `visibility:hidden` 이 되어 터치를 막지 않습니다.
+| 시각 | 동작 |
+| --- | --- |
+| 0.2초 | 첫 획을 쓰기 시작 |
+| 2.8초 | 마지막 획을 다 씀 |
+| 3.8초 | 1초 그대로 둔 뒤 사라지기 시작 |
+| 4.8초 | 다 사라지고 `visibility:hidden` 이 되어 터치를 막지 않음 |
+
+- 스크립트 없이 CSS 애니메이션만 씁니다. 스크립트가 늦거나 죽어도 화면을 가린 채 남지 않습니다.
 - 글씨는 메인 사진의 "Our wedding day" 에 맞췄습니다. 사진 속 글씨는 이미지라 원래 폰트를 알 수 없습니다.
   무료 필기체 후보를 렌더링해 비교하고 가장 비슷한 WindSong(OFL, Google Fonts)을 골랐습니다.
   색 rgb(218, 42, 52)는 사진의 획에서 뽑은 값입니다.
-- 폰트는 문구의 글자(W a d e g i m n r t, 공백)만 담은 4KB woff2 서브셋을 base64 로 넣었습니다.
-  첫 화면에 바로 보여야 하기 때문입니다. 폰트 이름은 `WindSong-Intro` 입니다.
-- 문구를 바꾸면 새 글자가 서브셋에 없어서 다른 폰트로 보입니다. 서브셋을 다시 받아 `@font-face` 의 base64 를 바꿉니다.
-  Google Fonts 는 `text=` 에 넣은 글자만 담은 폰트를 줍니다. UA 를 크롬으로 줘야 woff2 주소가 나옵니다.
-  ```bash
-  curl -sA 'Mozilla/5.0 (Macintosh) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36' \
-    'https://fonts.googleapis.com/css2?family=WindSong&text=We%20are%20getting%20married'
-  # 출력된 src: url(...) 의 woff2 를 받아 base64 로 바꾼다
-  ```
+- 폰트를 그대로 쓰지 않고, WindSong 획의 중심선을 뽑아 SVG `path` 로 넣었습니다(획 37개, 약 20KB).
+  폰트 윤곽선은 획의 양쪽 테두리라서 따라 그리면 테두리를 도는 모양이 됩니다.
+  중심선은 굵기가 일정한 펜 선이라 메인 사진의 글씨와도 결이 맞습니다.
+- `path` 마다 `style` 에 대시 길이(`stroke-dasharray`/`stroke-dashoffset`)와 시작 시각(`animation-delay`),
+  쓰는 시간(`animation-duration`)이 적혀 있습니다. 펜은 일정한 속도로 움직이고, 획 사이에 0.05초, 줄 사이에 0.15초 쉽니다.
+- 획 순서는 왼쪽 끝점에서 시작해 갈림길에서 가장 곧게 이어지는 쪽으로 갑니다. `tt` 가로획처럼 남은 획은 그 뒤에 씁니다.
+- 배경음악 안내("배경음악이 준비 되었습니다")는 템플릿이 1.5초 뒤 저절로 닫습니다. 오버레이가 덮은 동안 뜨면
+  가려진 채 지나가므로, `index.html` 맨 끝 배경음악 스크립트의 `afterIntro()` 가 오버레이가 다 사라진 뒤에 띄웁니다.
+- `prefers-reduced-motion: reduce` 에서는 다 쓴 글씨를 바로 보여 주고 1.5초에 사라지기 시작합니다.
 - `#user_wrap` 의 `overflow:hidden` 에 잘리지 않도록 마크업은 `<body>` 바로 아래, `#user_wrap` 앞에 둡니다.
 - CSS 위치: 마지막 `<style>` 블록 끝, `/* 첫 화면 오버레이` 주석 아래
+
+### 문구나 속도를 바꿀 때
+
+SVG 는 `tools/intro_write/make.sh` 가 만듭니다. 손으로 고치지 않습니다.
+
+1. `make.sh` 위쪽의 `LINES`(줄 단위 문구), `STROKE_WIDTH`, `WRITE_SECONDS`, `START_DELAY` 를 고칩니다.
+2. `./tools/intro_write/make.sh` 를 실행합니다. 맥의 Google Chrome 과 python3 가 필요합니다.
+   처음 실행하면 `tools/intro_write/.venv` 에 pillow, numpy, scipy, scikit-image 를 설치하고 WindSong 폰트를 받습니다.
+   작업 파일은 `tools/intro_write/out/` 에 생기며 둘 다 `.gitignore` 처리되어 있습니다.
+3. 마지막 줄에 찍힌 "마지막 획이 끝나는 시각" 을 확인합니다.
+4. `index.html` 의 `<svg class="intro_write">` 블록을 `tools/intro_write/out/intro_write.svg` 로 통째로 바꿉니다.
+5. CSS 의 숫자를 맞춥니다.
+   - `.intro_overlay` 의 `introFade` 지연은 마지막 획이 끝나는 시각에 1초를 더한 값입니다.
+   - `.intro_write path` 의 `stroke-width` 는 `STROKE_WIDTH` 와 같아야 합니다. 대시 길이에 굵기만큼 여유를 두었기 때문입니다.
+   - `.intro_write` 의 `width` 는 viewBox 가로 × 0.72(px), viewBox 가로 × 0.185(vw) 중 작은 값입니다.
+     글자 크기 72px, 좁은 화면에서는 18.5vw 에 해당합니다.
+
+글자를 PIL 로 직접 그리지 않고 크롬으로 그리는 이유가 있습니다. PIL 은 폰트의 문맥 대체 글자(calt)를 적용하지 않아서
+브라우저에서 보이는 WindSong 과 모양이 다릅니다. `tt` 의 긴 가로획과 `g` 의 꼬리가 빠집니다.
 
 ## 스크롤 등장 효과
 
