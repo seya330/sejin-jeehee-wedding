@@ -10434,8 +10434,6 @@ em.space {
 .personalized_venue_map{display:block;width:100%;height:auto!important;object-fit:contain}
 .personalized_ending{padding:65px 25px!important;text-align:center;background:#f5f3ed}
 .personalized_ending h2{font-size:20px;margin:0 0 20px}.personalized_ending p{line-height:1.9}
-.personalized_qr_link{display:flex;flex-direction:column;align-items:center;gap:14px;margin:28px auto 0;color:#43573a}
-.personalized_qr_link img{width:160px;height:160px;display:block;background:#fff}
 .section3 .relation_con{margin-top:24px!important}.section3 .name_con{margin-top:0!important}
 .section6,.section6 [aos],.section4 [aos]{opacity:1!important;transform:none!important;visibility:visible!important}
 #btnOpenTMap,#btnOpenKakaoNavi{display:none!important}.section6 .navi .map_btn.naver{width:100%!important;flex:1}
@@ -10452,7 +10450,7 @@ em.space {
 .photo_hint svg path:nth-child(2){animation-delay:.18s}
 .photo_hint svg path:nth-child(3){animation-delay:.36s}
 @keyframes photoHintArrow{0%,100%{opacity:.25}50%{opacity:1}}
-.photo_scroll{display:flex;gap:9px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-padding-left:24px;padding:0 24px 2px;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.photo_scroll{display:flex;gap:9px;cursor:grab;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-padding-left:24px;padding:0 24px 2px;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
 .photo_scroll .photo_item{flex:0 0 68%;scroll-snap-align:start;display:block;margin:0;padding:0;border:0;border-radius:3px;overflow:hidden;background:#e7e2d8;aspect-ratio:3/4;cursor:pointer}
 .photo_scroll .photo_item img{display:block;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .45s ease}
 .photo_scroll .photo_item.is_loaded img{opacity:1}
@@ -10460,6 +10458,10 @@ em.space {
 /* 사진이 아직 없거나 아직 안 불러온 칸은 스켈레톤으로 둔다 */
 .photo_scroll .photo_item:not(.is_loaded){background-image:linear-gradient(100deg,rgba(255,255,255,0) 20%,rgba(255,255,255,.5) 50%,rgba(255,255,255,0) 80%);background-size:220% 100%;background-repeat:no-repeat;animation:photoShimmer 1.6s ease-in-out infinite}
 @keyframes photoShimmer{0%{background-position:-60% 0}100%{background-position:160% 0}}
+/* 마우스로 끄는 동안에는 스냅을 끈다. 손을 떼면 다시 켜지면서 가까운 칸에 멈춘다 */
+.photo_scroll.is_dragging,.photo_viewer .pv_track.is_dragging{scroll-snap-type:none;-webkit-user-select:none;user-select:none}
+.photo_scroll.is_dragging{cursor:grabbing}
+.photo_scroll .photo_item img{-webkit-user-drag:none}
 @media (prefers-reduced-motion:reduce){.photo_scroll .photo_item:not(.is_loaded){animation:none}}
 
 /* 사진 크게 보기 */
@@ -12382,7 +12384,7 @@ em.space {
                     </div>
                 </section>
 
-                <section class="section11 personalized_ending" var="useEnding"><div class="inner"><h2>조세진 그리고 이지희</h2><p>함께 자리하시어 축복해 주세요.</p><a class="personalized_qr_link" href="https://seya330.github.io/sejin-jeehee-wedding/" target="_blank" rel="noopener"><img src="data:image/png;base64,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" alt="모바일 청첩장 QR 코드"><span>모바일 청첩장 열기</span></a></div></section>
+                <section class="section11 personalized_ending" var="useEnding"><div class="inner"><h2>조세진 그리고 이지희</h2><p>함께 자리하시어 축복해 주세요.</p></div></section>
 
                 
                 
@@ -12860,6 +12862,46 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         hintText.textContent = '옆으로 넘겨보세요';
         hint.classList.add('is_ready');
     })();
+
+    /* 마우스로도 좌우로 끌 수 있게 한다. 터치는 브라우저 기본 스크롤을 그대로 쓴다. */
+    function enableMouseDrag(el, blocked) {
+        var down = false, startX = 0, startLeft = 0, moved = 0;
+
+        el.addEventListener('pointerdown', function (e) {
+            if (e.pointerType === 'touch' || e.button !== 0) return;
+            if (blocked && blocked()) return;
+            down = true;
+            moved = 0;
+            startX = e.clientX;
+            startLeft = el.scrollLeft;
+            el.classList.add('is_dragging');
+        });
+
+        window.addEventListener('pointermove', function (e) {
+            if (!down) return;
+            var dx = e.clientX - startX;
+            moved = Math.max(moved, Math.abs(dx));
+            el.scrollLeft = startLeft - dx;
+            e.preventDefault();
+        });
+
+        window.addEventListener('pointerup', function () {
+            if (!down) return;
+            down = false;
+            el.classList.remove('is_dragging');
+        });
+
+        // 끌고 난 뒤 이어지는 click 은 무시한다. 드래그가 사진 열기나 닫기로 이어지면 안 된다.
+        el.addEventListener('click', function (e) {
+            if (moved <= 6) return;
+            moved = 0;
+            e.stopPropagation();
+            e.preventDefault();
+        }, true);
+    }
+
+    enableMouseDrag(scroll);
+    enableMouseDrag(track, function () { return zoomed; });
 
     /* 크게 보기 */
     function build() {
