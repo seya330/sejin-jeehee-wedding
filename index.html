@@ -13158,7 +13158,12 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         document.body.style.position = '';
         document.body.style.top = '';
         document.body.style.width = '';
+        // 템플릿이 html 에 scroll-behavior:smooth 를 걸어 두어서, 그대로 두면 맨 위에서 원래 자리까지
+        // 굴러 내려온다. 되돌릴 때만 잠시 끄고 바로 옮긴다. 같은 작업 안이라 그 사이 화면은 그려지지 않는다.
+        var root = document.documentElement;
+        root.style.scrollBehavior = 'auto';
         window.scrollTo(0, lockedY);
+        root.style.scrollBehavior = '';
     }
 
     function onKey(e) {
