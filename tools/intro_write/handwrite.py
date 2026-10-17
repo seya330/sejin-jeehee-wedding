@@ -210,9 +210,11 @@ for li, text in enumerate(LINES):
     for st in traverse(nodes, edges, sw):
         if length(st) < 0.8 * sw:
             continue
+        # 이 획에서 글자가 가장 굵은 쪽에 맞춘 굵기. 마스크 선이 글자를 다 덮을 만큼 굵어야 한다.
+        thick = 2 * float(np.percentile(dist[st[:, 1].astype(int), st[:, 0].astype(int)], 90))
         st = rdp(smooth(st, sw * 0.9), 0.35)
         g = np.stack([(st[:, 0] - CX) * UNIT, (st[:, 1] - BASE + li * LINE_HEIGHT * SIZE) * UNIT], 1)
-        out.append(g.round(2).tolist())
+        out.append({'thick': round(thick * UNIT, 2), 'pts': g.round(2).tolist()})
     result['lines'].append({'text': text, 'stroke_width': sw * UNIT, 'strokes': out})
     print('%s: 획 굵기 %.1fpx, 획 %d개' % (text, sw, len(out)), file=sys.stderr)
 json.dump(result, open(OUT, 'w'))

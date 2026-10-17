@@ -175,43 +175,56 @@ HTML 을 끝까지 받아야 스크립트가 돌았으므로, "배경음악이 �
 | --- | --- |
 | 0.2초 | 첫 획을 쓰기 시작 |
 | 2.8초 | 마지막 획을 다 씀 |
-| 3.8초 | 1초 그대로 둔 뒤 사라지기 시작 |
-| 4.8초 | 다 사라지고 `visibility:hidden` 이 되어 터치를 막지 않음 |
+| 3.0초 | 펜이 닿지 않은 자투리까지 다 드러남 |
+| 4.0초 | 1초 그대로 둔 뒤 사라지기 시작 |
+| 5.0초 | 다 사라지고 `visibility:hidden` 이 되어 터치를 막지 않음 |
 
 - 스크립트 없이 CSS 애니메이션만 씁니다. 스크립트가 늦거나 죽어도 화면을 가린 채 남지 않습니다.
 - 글씨는 메인 사진의 "Our wedding day" 에 맞췄습니다. 사진 속 글씨는 이미지라 원래 폰트를 알 수 없습니다.
   무료 필기체 후보를 렌더링해 비교하고 가장 비슷한 WindSong(OFL, Google Fonts)을 골랐습니다.
   색 rgb(218, 42, 52)는 사진의 획에서 뽑은 값입니다.
-- 폰트를 그대로 쓰지 않고, WindSong 획의 중심선을 뽑아 SVG `path` 로 넣었습니다(획 37개, 약 20KB).
-  폰트 윤곽선은 획의 양쪽 테두리라서 따라 그리면 테두리를 도는 모양이 됩니다.
-  중심선은 굵기가 일정한 펜 선이라 메인 사진의 글씨와도 결이 맞습니다.
-- `path` 마다 `style` 에 대시 길이(`stroke-dasharray`/`stroke-dashoffset`)와 시작 시각(`animation-delay`),
-  쓰는 시간(`animation-duration`)이 적혀 있습니다. 펜은 일정한 속도로 움직이고, 획 사이에 0.05초, 줄 사이에 0.15초 쉽니다.
-- 획 순서는 왼쪽 끝점에서 시작해 갈림길에서 가장 곧게 이어지는 쪽으로 갑니다. `tt` 가로획처럼 남은 획은 그 뒤에 씁니다.
+- SVG 는 두 부분입니다(약 48KB).
+  - `.intro_ink`: 화면에 보이는 글씨. WindSong 글자 윤곽선을 그대로 옮긴 path 하나입니다.
+  - `#introInk` 마스크: 획의 중심선 path 37개와 rect 하나. 흰 선이 그려진 자리만 글씨가 드러납니다.
+- 중심선을 직접 빨간 선으로 그리면 안 됩니다. 굵기가 일정한 펜 선이 되어 WindSong 의 굵고 가는 획이 사라지고,
+  글씨가 어색해 보입니다(실제로 그렇게 했다가 되돌렸습니다). 폰트 윤곽선을 따라 그리는 방식도 안 됩니다.
+  윤곽선은 획의 양쪽 테두리라서 테두리를 도는 모양이 됩니다.
+- 마스크 path 마다 `style` 에 굵기, 대시 길이(`stroke-dasharray`/`stroke-dashoffset`), 시작 시각(`animation-delay`),
+  쓰는 시간(`animation-duration`)이 적혀 있습니다. 굵기는 그 획에서 글자가 가장 굵은 쪽보다 조금 굵습니다.
+  펜은 일정한 속도로 움직이고, 획 사이에 0.05초, 줄 사이에 0.15초 쉽니다.
+- 중심선은 획 끝에서 조금 짧아서 마스크가 닿지 않는 자투리가 남습니다. 마지막 획 뒤에 마스크의 rect 가 0.2초 동안
+  서서히 채워 나머지를 드러냅니다. 그래서 다 쓴 모습은 폰트와 똑같습니다.
+- 획 순서는 왼쪽 끝점에서 시작해 갈림길에서 가장 곧게 이어지는 쪽으로 갑니다. 남은 획은 그 뒤에 왼쪽부터 씁니다.
 - 배경음악 안내("배경음악이 준비 되었습니다")는 템플릿이 1.5초 뒤 저절로 닫습니다. 오버레이가 덮은 동안 뜨면
   가려진 채 지나가므로, `index.html` 맨 끝 배경음악 스크립트의 `afterIntro()` 가 오버레이가 다 사라진 뒤에 띄웁니다.
 - `prefers-reduced-motion: reduce` 에서는 다 쓴 글씨를 바로 보여 주고 1.5초에 사라지기 시작합니다.
 - `#user_wrap` 의 `overflow:hidden` 에 잘리지 않도록 마크업은 `<body>` 바로 아래, `#user_wrap` 앞에 둡니다.
 - CSS 위치: 마지막 `<style>` 블록 끝, `/* 첫 화면 오버레이` 주석 아래
+- 크롬과 WebKit(Playwright, Safari 와 같은 엔진)에서 마스크가 순서대로 드러나는 것을 확인했습니다.
 
 ### 문구나 속도를 바꿀 때
 
 SVG 는 `tools/intro_write/make.sh` 가 만듭니다. 손으로 고치지 않습니다.
 
-1. `make.sh` 위쪽의 `LINES`(줄 단위 문구), `STROKE_WIDTH`, `WRITE_SECONDS`, `START_DELAY` 를 고칩니다.
+1. `make.sh` 위쪽의 `LINES`(줄 단위 문구), `WRITE_SECONDS`, `START_DELAY` 를 고칩니다.
 2. `./tools/intro_write/make.sh` 를 실행합니다. 맥의 Google Chrome 과 python3 가 필요합니다.
-   처음 실행하면 `tools/intro_write/.venv` 에 pillow, numpy, scipy, scikit-image 를 설치하고 WindSong 폰트를 받습니다.
-   작업 파일은 `tools/intro_write/out/` 에 생기며 둘 다 `.gitignore` 처리되어 있습니다.
-3. 마지막 줄에 찍힌 "마지막 획이 끝나는 시각" 을 확인합니다.
+   처음 실행하면 `tools/intro_write/.venv` 에 pillow, numpy, scipy, scikit-image, uharfbuzz, fonttools 를 설치하고
+   WindSong 폰트를 받습니다. 작업 파일은 `tools/intro_write/out/` 에 생기며 둘 다 `.gitignore` 처리되어 있습니다.
+3. 마지막 줄에 찍힌 viewBox 크기와 "자투리까지" 시각을 확인합니다.
 4. `index.html` 의 `<svg class="intro_write">` 블록을 `tools/intro_write/out/intro_write.svg` 로 통째로 바꿉니다.
 5. CSS 의 숫자를 맞춥니다.
-   - `.intro_overlay` 의 `introFade` 지연은 마지막 획이 끝나는 시각에 1초를 더한 값입니다.
-   - `.intro_write path` 의 `stroke-width` 는 `STROKE_WIDTH` 와 같아야 합니다. 대시 길이에 굵기만큼 여유를 두었기 때문입니다.
+   - `.intro_overlay` 의 `introFade` 지연은 "자투리까지" 시각에 1초를 더한 값입니다.
    - `.intro_write` 의 `width` 는 viewBox 가로 × 0.72(px), viewBox 가로 × 0.185(vw) 중 작은 값입니다.
      글자 크기 72px, 좁은 화면에서는 18.5vw 에 해당합니다.
 
-글자를 PIL 로 직접 그리지 않고 크롬으로 그리는 이유가 있습니다. PIL 은 폰트의 문맥 대체 글자(calt)를 적용하지 않아서
-브라우저에서 보이는 WindSong 과 모양이 다릅니다. `tt` 의 긴 가로획과 `g` 의 꼬리가 빠집니다.
+도구가 하는 일입니다.
+
+1. 크롬으로 각 줄을 글자 크기 600px 로 그립니다.
+2. `handwrite.py` 가 그 이미지에서 획의 중심선을 뽑아 펜 순서대로 잇습니다.
+3. `build_svg.py` 가 WindSong 글자 윤곽선을 HarfBuzz 로 배치하고, 중심선으로 마스크를 만들어 합칩니다.
+
+글자를 PIL 로 직접 그리지 않고 크롬과 HarfBuzz 를 쓰는 이유가 있습니다. PIL 은 폰트의 문맥 대체 글자(calt)를
+적용하지 않아서 브라우저에서 보이는 WindSong 과 모양이 다릅니다. `tt` 의 긴 가로획과 `g` 의 꼬리가 빠집니다.
 
 ## 스크롤 등장 효과
 
