@@ -10451,6 +10451,12 @@ em.space {
 .section4 .d_day .calc span{background:transparent;box-shadow:none;border-radius:0}
 .section4 .d_day .calc span::before{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:-1;width:64px;height:64px;background:var(--heart-img) no-repeat center/contain;-webkit-filter:drop-shadow(0 3px 4px rgba(0,0,0,.3));filter:drop-shadow(0 3px 4px rgba(0,0,0,.3))}
 @media (max-width:295px){.section4 .d_day .calc span::before{width:50px;height:50px}}
+/* 달력과 카운트다운 숫자는 명조체로. GowunDodum 숫자가 너무 밋밋하다. */
+.section4 .table_wrap table caption .table_title,
+.section4 .table_wrap table thead th,
+.section4 .table_wrap table tbody td,
+.section4 .d_day .calc span,
+.section4 .d_day .calc span::after{font-family:'Nanum Myeongjo',serif}
 #p_rsvp,.modal_rsvp,.modal_interview,.modal_board,.modal_photo{display:none!important}
 /* 사진 스트립 (photos/ 폴더 기반) */
 .section_photos{padding:var(--section-margin)}
