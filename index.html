@@ -12553,7 +12553,7 @@ M337.7 297.2Q333.3 297.2 331.4 293.9Q329.5 290.5 329.5 285.6Q329.5 281.6 330.6 2
         </div>
 
         <div class="quick_btn preview_resize">
-            <button class=" share" onclick="common.shareKakao(&quot;s5lajly1m3&quot;, &#39;w&#39;)" var="isKakaoShare" style="display:none!important" hidden aria-hidden="true"><i class="xi-share-alt"></i></button>
+            <button class=" share" onclick="common.shareKakao(&quot;s5lajly1m3&quot;, &#39;w&#39;)" var="isKakaoShare" aria-label="청첩장 공유하기"><i class="xi-share-alt"></i></button>
             <button class=" arrow_up"><i class="xi-angle-up"></i></button>
         </div>
         <div class="user_modal" id="modals"></div>
@@ -12929,7 +12929,31 @@ M337.7 297.2Q333.3 297.2 331.4 293.9Q329.5 290.5 329.5 285.6Q329.5 281.6 330.6 2
     if(typeof showMap==='function') showMap=function(){};
     if(typeof youtube!=='undefined') youtube.init=function(){};
     if(typeof wedding!=='undefined') wedding.accessLog=function(){};
-    if(typeof common!=='undefined') { common.shareKakao=function(){window.open('https://seya330.github.io/sejin-jeehee-wedding/','_blank','noopener');}; }
+    // 오른쪽 아래 공유 버튼. 템플릿은 카카오 SDK 로 공유하는데 앱 키가 없어 쓸 수 없다.
+    // 휴대폰 공유 창(navigator.share)을 띄우고, 지원하지 않는 브라우저(안드로이드 카카오톡 인앱 등)에서는 주소를 복사한다.
+    // 주소와 제목은 og 메타에서 읽는다. file:// 로 열어도 실제 청첩장 주소가 공유된다.
+    const ogMeta=p=>(document.querySelector('meta[property="'+p+'"]')||{}).content||'';
+    const copyUrl=url=>{
+      const done=()=>alert('청첩장 주소를 복사했습니다.\n'+url);
+      const legacy=()=>{
+        const ta=document.createElement('textarea');
+        ta.value=url; ta.setAttribute('readonly',''); ta.style.cssText='position:fixed;top:0;left:0;opacity:0';
+        document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0,url.length);
+        let ok=false; try{ok=document.execCommand('copy');}catch(e){}
+        ta.remove();
+        if(ok) done(); else prompt('아래 주소를 길게 눌러 복사해 주세요.',url);
+      };
+      if(navigator.clipboard&&window.isSecureContext) navigator.clipboard.writeText(url).then(done,legacy);
+      else legacy();
+    };
+    const shareInvitation=()=>{
+      const url=ogMeta('og:url')||location.href.split('#')[0];
+      const title=ogMeta('og:title')||document.title;
+      if(!navigator.share){copyUrl(url);return;}
+      // 사용자가 공유 창을 닫은 것(AbortError)은 실패가 아니다
+      navigator.share({title:title,text:title,url:url}).catch(err=>{if(!err||err.name!=='AbortError')copyUrl(url);});
+    };
+    if(typeof common!=='undefined') { common.shareKakao=shareInvitation; }
     if(typeof wedding!=='undefined') { wedding.openRsvpPopup=function(){}; wedding.popupRsvp=function(){}; wedding.isOpenRsvp=true; wedding.getGuestBook=function(){}; }
     if(typeof rsvp!=='undefined') rsvp.submit=function(){alert('참석 여부 전송은 원본 페이지에서 가능합니다.');};
     if(typeof share!=='undefined') {if(share.kakao)share.kakao=function(){alert('공유는 원본 페이지에서 가능합니다.');};}

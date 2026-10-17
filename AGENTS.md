@@ -293,6 +293,10 @@ SVG 는 `tools/intro_write/make.sh` 가 만듭니다. 손으로 고치지 않습
 
 - `마음 전하실 곳`(section9)에는 계좌번호가 들어갑니다. 커밋 전에 실제 계좌 정보가 포함되는지 확인합니다.
 - `qr/` 디렉터리는 `.gitignore`에 있습니다. 추적 대상으로 되돌리지 않습니다.
+- 오른쪽 아래 공유 버튼(`.quick_btn .share`)은 스크롤하면 템플릿이 보이게 합니다. 누르면 `common.shareKakao()` 가 불리는데,
+  템플릿의 카카오 SDK 공유는 앱 키가 없어 쓸 수 없으므로 하단 스크립트에서 `shareInvitation()` 으로 바꿔 둡니다.
+  휴대폰 공유 창(`navigator.share`)을 띄우고, 지원하지 않는 브라우저(안드로이드 카카오톡 인앱 등)에서는 주소를 복사해 알립니다.
+  공유하는 제목과 주소는 `og:title`, `og:url` 메타에서 읽습니다. 주소가 바뀌면 메타만 고치면 됩니다.
 - 템플릿이 `html` 에 `scroll-behavior:smooth` 를 걸어 두었습니다. `window.scrollTo` 는 부드럽게 굴러갑니다.
   스크롤을 즉시 옮겨야 하면 그 순간에만 `document.documentElement.style.scrollBehavior = 'auto'` 로 바꿨다가 되돌립니다.
 - 지도 아래 길안내 버튼은 네이버 지도 · 카카오 · 티맵 순서의 동그란 로고 버튼입니다(`index.html` 하단 스크립트의 `venue`).
