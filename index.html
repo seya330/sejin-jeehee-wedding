@@ -10442,6 +10442,31 @@ em.space {
 .section6 .locate_name{font-size:20px!important;line-height:1.7}.section4 .c_location{line-height:1.8}.section4 .img_box{display:none!important}
 .section12 [var="greetingContent"]{line-height:2.1}
 #p_rsvp,.modal_rsvp,.modal_interview,.modal_board,.modal_photo{display:none!important}
+/* 사진 스트립 (photos/ 폴더 기반) */
+.section_photos{padding:var(--section-margin)}
+.section_photos .title{margin-bottom:14px}
+.photo_hint{display:flex;align-items:center;justify-content:center;gap:7px;margin:0 0 20px;font-size:var(--font-small);color:#a09c94;letter-spacing:.02em}
+.photo_hint svg{width:24px;height:12px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.photo_hint svg path{animation:photoHintArrow 1.6s ease-in-out infinite}
+.photo_hint svg path:nth-child(2){animation-delay:.18s}
+.photo_hint svg path:nth-child(3){animation-delay:.36s}
+@keyframes photoHintArrow{0%,100%{opacity:.25}50%{opacity:1}}
+.photo_scroll{display:flex;gap:9px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-padding-left:24px;padding:0 24px 2px;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.photo_scroll .photo_item{flex:0 0 68%;scroll-snap-align:start;display:block;margin:0;padding:0;border:0;border-radius:3px;overflow:hidden;background:#efece6;aspect-ratio:3/4;cursor:pointer}
+.photo_scroll .photo_item img{display:block;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .45s ease}
+.photo_scroll .photo_item img.is_loaded{opacity:1}
+
+/* 사진 크게 보기 */
+.photo_viewer{position:fixed;top:0;left:0;width:100%;height:100%;z-index:2000;background:#000;font-family:var(--font-family,GowunDodum-Regular,serif)}
+.photo_viewer[hidden]{display:none}
+.photo_viewer *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+.photo_viewer .pv_track{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:none;-ms-overflow-style:none}
+.photo_viewer .pv_track::-webkit-scrollbar{display:none}
+.photo_viewer.is_zoomed .pv_track{overflow:hidden;touch-action:none;scroll-snap-type:none}
+.photo_viewer .pv_slide{flex:0 0 100%;height:100%;scroll-snap-align:center;display:flex;align-items:center;justify-content:center;padding:54px 0 64px}
+.photo_viewer .pv_slide img{max-width:100%;max-height:100%;object-fit:contain;transform-origin:center center;transition:transform .25s ease;-webkit-user-select:none;user-select:none;-webkit-user-drag:none}
+.photo_viewer .pv_close{position:absolute;top:4px;right:4px;display:flex;align-items:center;justify-content:center;width:48px;height:48px;padding:0;border:0;background:none;color:#fff;font-size:28px;line-height:1;text-shadow:0 1px 3px rgba(0,0,0,.65);z-index:2;cursor:pointer}
+.photo_viewer .pv_count{position:absolute;left:0;right:0;bottom:24px;text-align:center;color:rgba(255,255,255,.85);font-size:13px;letter-spacing:.1em;text-shadow:0 1px 3px rgba(0,0,0,.65);z-index:2;pointer-events:none}
 </style>
 </head>
 
@@ -12330,6 +12355,23 @@ em.space {
                 
 
                 
+                <section class="section_photos" id="photoStrip" style="display:none">
+                    <div class="inner">
+                        <div class="title">
+                            <h2>우리의 순간</h2>
+                        </div>
+                        <div class="photo_hint">
+                            <span>옆으로 넘겨보세요</span>
+                            <svg viewBox="0 0 27 16" aria-hidden="true" focusable="false">
+                                <path d="m4 4 4 4-4 4"/>
+                                <path d="m11 4 4 4-4 4"/>
+                                <path d="m18 4 4 4-4 4"/>
+                            </svg>
+                        </div>
+                        <div class="photo_scroll" id="photoScroll"></div>
+                    </div>
+                </section>
+
                 <section class="section11 personalized_ending" var="useEnding"><div class="inner"><h2>조세진 그리고 이지희</h2><p>함께 자리하시어 축복해 주세요.</p><a class="personalized_qr_link" href="https://seya330.github.io/sejin-jeehee-wedding/" target="_blank" rel="noopener"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAACX4AAAl+AQAAAAAkjeNzAAAPsElEQVR42u3cQY60NhCA0VY4gI/E1X2kPgASWTQLLJVdpmdGEeR9u/wMxv0UL12vXVfaXgyAAQMGDJiAAQMGDBgwYMCAAQMGTMCAAQMGTMCAAQMGDJiAAQMGDJiAAQMGDBgwAQMGDBgwAQMGDBgwYAIGDBgwYAIGDBgwYMAEDBgwYMAEDBgwYMCACRgwYMCACRgwYMCAARMwYMCAARMwYMCAAQMmYMCAAQMmYMCAAQMGTMCAAQMGTMCAAQMGDJiAAQMGDJiAAQMGDBgwAQMGDBgwAQMGDBgwYAIGDBgwYAIGDBgwYMAEDBgwYMAEDBgwYMCACRgwYMCACRgwYMCAARMwYMCAARMwYMCAAQMmYMCAAQMmYMCAAQMGTMCAAQMGTMCAAQMGDJiAAQMGDJiAAQMGDBgw/Q7Y61rr+a3l8x/v/qPBt0q406Do0WAbsy0DsH9euhQwYMCAAQMmYMCAAQMmYMCAAQMGTMCAAQMGTMCAAQMGDJiAAQMGDJiAAQMGDBgwAQMGDBgwAQMGDBgwYAIG7D8snSqwpKMJBqMD3v1vtW9F1f4O63nZJV0w/9bsTzZVwJEEBgwYMAEDBgwYMAEDBgwYMGACBgwYMGACBgwYMGDABAwYMGDABAwYMGDAgAkYMGDAgAkYMGDAgAETMGDAbtTsFft38O5y8c7+xdEB7XX+dPPTUwWilVZTBRxJYMCACRgwYMCAARMwYMCAARMwYMCAAQMmYMCAAQMmYMCAAQMGTMCAAQMGTMCAAQMGDJiAAQMGDJiAAQMG7Hn90VSBYwhA6c8HKM1UgaYyO1Vg8NZgh9HLpgo4ksCAARMwYMCAAQMmYMCAAQMmYMCAAQMGTMCAAQMGTMCAAQMGDJiAAQMGDJiAAQMGDBgwAQMGDBgwAQMGDNgD+6OpAtMLXpxFEG1+8NZuqoAjCQyYgAEDBgwYMAEDBgwYMAEDBgwYMGACBgwYMGACBgwYMGDABAwYMGDABAwYMGDAgAkYMGDAgAkYMGDAgP2Pmx0CsM/e2b94079pMMHg1V+wHTiwTk4w+O4nmyrgSAIDBgyYgAEDBgyYgAEDBgwYMAEDBgwYMAEDBgwYMGACBgwYMGACBgwYMGDABAwYMGDABAwYMGDAgAkYMGA3Kr1iP11+nf+/fjSbqQKOJDBgwAQMGDBgwIAJGDBgwIAJGDBgwIABEzBgwIABEzBgwIABAyZgwIABAyZgwIABAwZMwIABAwZMwIABA/aM9r9p+6xe+o++20Y7OiD6Vj0vu/z67/J/mCMJDBgwYAIGDBgwYAIGDBgwYMAEDBgwYMAEDBgwYMCACRgwYMCACRgwYMCAARMwYMCAARMwYMCAAQMmYMCA3aefzAdob/pHldn5ANHLzaOlP1UgX7Ckv7Ke/3wxVcCRBAYMmIABAwYMGDABAwYMGDABAwYMGDBgAgYMGDBgAgYMGDBgwAQMGDBgwAQMGDBgwIAJGDBgwIAJGDBgwB7R4KZ99OfRTf/orSW6s9+MKYgWPJqeYJAuuFx8K5+x4P8wRxIYMGDABAwYMGDABAwYMGDAgAkYMGDAgAkYMGDAgAETMGDAgAETMGDAgAEDJmDAgAEDJmDAgAEDBkzAgAG7Tz+ZKhA+Su/sb/1tHI/K7CyCwYKf2qkC+cCB5pGpAo4kMGDAgAkYMGDAgAkYMGDAgAFDAAwYMGDABAwYMGDABAwYMGDAgAkYMGDAgAkYMGDAgAETMGDAgAETMGDAgN28dKpAePt+MAQgeisaAnBxdEBbDTb/7r+Vjw6o/UemCjiSwIABAyZgwIABAyZgwIABAwZMwIABAwZMwIABAwYMmIABAwYMmIABAwYMGDABAwYMGDABAwYMGDBgAgYM2F3bs9ohAM3AgbzSHwIQXedvW4PhBoO5B3s63KD5ydvsDk0VcCSBAQMGTMCAAQMGTMCAAQMGDJiAAQMGDJiAAQMGDBgwAQMGDBgwAQMGDBgwYAIGDBgwYAIGDBgwYMAEDBiwuza4Qf/5g/BiflNJZxHU87emr/PPPtrSHzn41vG71n0uUwUcSWDAgAETMGDAgAETMGDAgAEDJmDAgAEDJmDAgAEDBkzAgAEDBkzAgAEDBgyYgAEDBgyYgAEDBgwYMAEDBuxGfTdV4OJ1/sHAgaj2pv/sgq90h/mCzU82VcCRBAYMGDABAwYMGDABAwYMGDBgCIABAwYMmIABAwYMmIABAwYMGDABAwYMGDABAwYMGDBgAgYMGDBgAgYMGLCbt2cNLuYv6cvv4ItL/9HRcdO/Bm/lcw/W9NFPfpepAo4kMGDAgAkYMGDAgAkYMGDAgAETMGDAgAETMGDAgAEDJmDAgAEDJmDAgAEDBkzAgAEDBkzAgAEDBgyYgAEDdqMGIwGavxvc9H8HC27NW4NqsKfSH27QbmMwHyB69Opv3lQBRxIYMGACBgwYMGDABAwYMGDABAwYMGDAgAkYMGDAgAkYMGDAgAETMGDAgAETMGDAgAEDJmDAgAEDJmDAgAF7YOlUgXB0QFN00z8fUzC9jaZ8CEA9Lxs+SmcR7KYKOJLAgAETMGDAgAEDJmDAgAEDJmDAgAEDBkzAgAEDBkzAgAEDBgyYgAEDBgyYgAEDBgwYMAEDBgwYMAEDBgzYI7o4BGD9aj5APT86rvOXa0MA9mi4wWDBdBbBq3lr748pMFXAkQQGDBgwAQMGDBgwAQMGDBgwYAIGDBgwYAIGDBgwYMAEDBgwYMAEDBgwYMCACRgwYMCACRgwYMCAARMwYMDu2j5ZfjG/nhdsb/rv6XX+n2xjSXf4urb53VQBRxIYMGACBgwYMGDABAwYMGDABAwYMGDAgAkYMGDAgAkYMGDAgAETMGDAgAETMGDAgAEDJmDAgAEDJmDAgAF7RIMb9J8/WPqP2tavxgTU8xJLOjpgT8cU1PPv2n5Pw1QBRxIYMGDABAwYMGDABAwYMGDAgAkYMGDAgAkYMGDAgAETMGDAgAETMGDAgAEDJmDAgAEDJmDAgAEDBkzAgAG7Xd9NFUjnAwy+1d70b2YRHI/K7Leaf3sHX1zSHZZrQxBMFXAkgQEDBkzAgAEDBkzAgAEDBgyYgAEDBgyYgAEDBgwYMAEDBgwYMAEDBgwYMGACBgwYMGACBgwYMGDABAwYsBuVThU4Kv1HR2t/FkE9/90SDQEYTBUYfOviwIFogkHUYqqAIwkMGDABAwYMGDBgAgYMGDBgAgYMGDBgwAQMGDBgwAQMGDBgwIAJGDBgwIAJGDBgwIABEzBgwIABEzBgwIA9ootTBWqwRIlu3zd/EV3nHyw42OH72qPt4k9OM1XAkQQGDBgwAQMGDBgwAQMGDBgwYAIGDBgwYAIGDBgwYMAEDBgwYMAEDBgwYMCACRgwYMCACRgwYMCAARMwYMBu1OxUgaO1/2h2waX5txosUdLL/bX//XyHF79lqoAjCQwYMGACBgwYMGACBgwYMGDABAwYMGDABAwYMGDAgAkYMGDAgAkYMGDAgAETMGDAgAETMGDAgAEDJmDAgN212SEA7/4SJb3pP/utdsHZWQTtDtd0JMIxH6D/yFQBRxIYMGACBgwYMGDABAwYMGDABAwYMGDAgAkYMGDAgAkYMGDAgAETMGDAgAETMGDAgAEDJmDAgAEDJmDAgAF7RrNTBQZDAI7Wa2+V354PUPq/5B28tfenJSymCjiSwIABEzBgwIABAyZgwIABAyZgwIABAwZMwIABAwZMwIABAwYMmIABAwYMmIABAwYMGDABAwYMGDABAwYM2COanSoQXcxvr/PX87Ltxfza//46+a1wCEC063p+FA4cmP2WqQKOJDBgwIAJGDBgwIAJGDBgwIABQwAMGDBgwAQMGDBgwAQMGDBgwIAJGDBgwIAJGDBgwIABEzBgwIABEzBgwIDdvNmpAoMGN/3bO/vRgjXYUz4EoPnW1vxb8628sl/KVAFHEhgwYMAEDBgwYMAEDBgwYMCACRgwYMCACRgwYMCAARMwYMCAARMwYMCAAQMmYMCAAQMmYMCAAQMGTMCAAbtR+2/3Wfa7WQTHfIDSDBy4+CjfRvPhaEFTBRxJYMCACRgwYMCAARMwYMCAARMwYMCAAQMmYMCAAQMmYMCAAQMGTMCAAQMGTMCAAQMGDJiAAQMGDJiAAQMG7Bml8wGmWyffWpqpAmswBKB9FFXPm9/62xh8K9+hqQKOJDBgwIAJGDBgwIAJGDBgwIABQwAMGDBgwAQMGDBgwAQMGDBgwIAJGDBgwIAJGDBgwIABEzBgwIABEzBgwIDdvHSqwOCK/T47BKC9mP/585JOMIiGAJR0G01LOi2hBGMKdlMFHElgwIAJGDBgwIABEzBgwIABEzBgwIABAyZgwIABAyZgwIABAwZMwIABAwZMwIABAwYMmIABAwYMmIABAwbsEc1OFRjc2c+nCtTg5eg6/za767U/i2C2cPPNI1MFHElgwIABEzBgwIABEzBgwIABA4YAGDBgwIAJGDBgwIAJGDBgwIABEzBgwIABEzBgwIABAyZgwIABAyZgwIABu3l/O1Xg3f9WdJ3/qATbaGu+NZhFMNjh1l9wN1XAkQQGDJiAAQMGDBgwAQMGDBgwAQMGDBgwYAIGDBgwYAIGDBgwYMAEDBgwYMAEDBgwYMCACRgwYMCACRgwYMAe0d9OFTiqwVv5twYDB+rkNrborXS4wWKqgCMJDBgwAQMGDBgwYAIGDBgwYAIGDBgwYMAEDBgwYMAEDBgwYMCACRgwYMCACRgwYMCAARMwYMCAARMwYMCAPaLZqQKDpocARDf99+CtV7Ng9K1o84O5B/u1bZgq4EgCAwZMwIABAwYMmIABAwYMmIABAwYMGDABAwYMGDABAwYMGDBgAgYMGDBgAgYMGDBgwAQMGDBgwAQMGDBgzyidKjDd+pOBA5+W2fkAeekOTRVwJIEBAyZgwIABAyZgwIABAwZMwIABAwZMwIABAwYMmIABAwYMmIABAwYMGDABAwYMGDABAwYMGDBgAgYMGLDHt+tKGzBgwIABAyZgwIABAyZgwIABAwZMwIABAwZMwIABAwYMmIABAwYMmIABAwYMGDABAwYMGDABAwYMGDBgAgYMGDBgAgYMGDBgwAQMGDBgwAQMGDBgwIAJGDBgwIAJGDBgwIABEzBgwIABEzBgwIABAyZgwIABAyZgwIABAwZMwIABAwZMwIABAwYMmIABAwYMmIABAwYMGDABAwYMGDABAwYMGDBgAgYMGDBgAgYMGDBgwAQMGDBgwAQMGDBgwIAJGDBgwIAJGDBgwIABEzBgwIABEzBgwIABAyZgwIABAyZgwIABAwZMwIABAwZMwIABAwYMmIABAwYMmIABAwYMGDBdAPsX1SjMKg1BZc0AAAAASUVORK5CYII=" alt="모바일 청첩장 QR 코드"><span>모바일 청첩장 열기</span></a></div></section>
 
                 
@@ -12744,4 +12786,252 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
 
 <!-- External service script preserved in original assets. -->
 
+
+<!-- 사진 크게 보기 레이어 (photos/ 폴더 기반) -->
+<div class="photo_viewer" id="photoViewer" role="dialog" aria-modal="true" aria-label="사진 크게 보기" hidden>
+    <div class="pv_track" id="photoViewerTrack"></div>
+    <button type="button" class="pv_close" id="photoViewerClose" aria-label="닫기">&times;</button>
+    <div class="pv_count" id="photoViewerCount"></div>
+</div>
+<script src="photos/photos.js"></script>
+<script>
+(function () {
+    var ZOOM = 2.4;
+
+    var strip = document.getElementById('photoStrip');
+    var scroll = document.getElementById('photoScroll');
+    var viewer = document.getElementById('photoViewer');
+    var track = document.getElementById('photoViewerTrack');
+    var countBox = document.getElementById('photoViewerCount');
+    var closeBtn = document.getElementById('photoViewerClose');
+    if (!strip || !scroll || !viewer || !track) return;
+
+    var photos = Array.isArray(window.WEDDING_PHOTOS) ? window.WEDDING_PHOTOS.filter(Boolean) : [];
+    if (!photos.length) return;
+
+    var current = 0;
+    var lockedY = 0;
+    var zoomed = false;
+    var built = false;
+
+    function src(name) {
+        return 'photos/' + encodeURIComponent(name);
+    }
+
+    /* 하단 가로 스크롤 목록 */
+    (function renderStrip() {
+        var frag = document.createDocumentFragment();
+        photos.forEach(function (name, i) {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'photo_item';
+            btn.setAttribute('aria-label', (i + 1) + '번째 사진 크게 보기');
+
+            var img = document.createElement('img');
+            img.alt = '';
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            img.addEventListener('load', function () { img.classList.add('is_loaded'); });
+            img.src = src(name);
+
+            btn.appendChild(img);
+            btn.addEventListener('click', function () { open(i); });
+            frag.appendChild(btn);
+        });
+        scroll.appendChild(frag);
+        strip.style.display = 'block';
+    })();
+
+    /* 크게 보기 */
+    function build() {
+        if (built) return;
+        built = true;
+        var frag = document.createDocumentFragment();
+        photos.forEach(function (name) {
+            var slide = document.createElement('div');
+            slide.className = 'pv_slide';
+            var img = document.createElement('img');
+            img.alt = '';
+            img.setAttribute('data-src', src(name));
+            slide.appendChild(img);
+            frag.appendChild(slide);
+        });
+        track.appendChild(frag);
+    }
+
+    function loadNear(i) {
+        for (var k = i - 1; k <= i + 1; k++) {
+            var slide = track.children[k];
+            if (!slide) continue;
+            var img = slide.firstChild;
+            if (img && !img.getAttribute('src')) img.src = img.getAttribute('data-src');
+        }
+    }
+
+    function currentImg() {
+        var slide = track.children[current];
+        return slide ? slide.firstChild : null;
+    }
+
+    function updateCount() {
+        countBox.textContent = (current + 1) + ' / ' + photos.length;
+    }
+
+    function open(i) {
+        build();
+        current = i;
+        viewer.hidden = false;
+        lockScroll();
+        loadNear(i);
+        track.scrollLeft = track.clientWidth * i;
+        updateCount();
+        document.addEventListener('keydown', onKey);
+    }
+
+    function close() {
+        resetZoom();
+        viewer.hidden = true;
+        unlockScroll();
+        document.removeEventListener('keydown', onKey);
+        // 닫은 사진에 하단 목록을 맞춘다.
+        var item = scroll.children[current];
+        if (item) scroll.scrollLeft += item.getBoundingClientRect().left - scroll.getBoundingClientRect().left - 24;
+    }
+
+    function go(i) {
+        if (i < 0 || i >= photos.length) return;
+        resetZoom();
+        track.scrollTo({ left: track.clientWidth * i, behavior: 'smooth' });
+    }
+
+    function lockScroll() {
+        lockedY = window.pageYOffset || document.documentElement.scrollTop || 0;
+        document.body.style.position = 'fixed';
+        document.body.style.top = -lockedY + 'px';
+        document.body.style.width = '100%';
+    }
+
+    function unlockScroll() {
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        window.scrollTo(0, lockedY);
+    }
+
+    function onKey(e) {
+        if (e.key === 'Escape') close();
+        else if (e.key === 'ArrowRight') go(current + 1);
+        else if (e.key === 'ArrowLeft') go(current - 1);
+    }
+
+    track.addEventListener('scroll', function () {
+        if (zoomed) return;
+        var i = Math.round(track.scrollLeft / track.clientWidth);
+        if (i === current || i < 0 || i >= photos.length) return;
+        current = i;
+        updateCount();
+        loadNear(i);
+    });
+
+    closeBtn.addEventListener('click', close);
+
+    /* 확대: 더블탭(더블클릭)으로 켜고 끈다. 확대 중에는 끌어서 움직인다. */
+    var panX = 0, panY = 0, baseX = 0, baseY = 0;
+    var dragging = false, startX = 0, startY = 0;
+    var lastTap = 0, lastTapX = 0, lastTapY = 0;
+
+    function applyTransform(img) {
+        img.style.transform = 'translate(' + panX + 'px,' + panY + 'px) scale(' + ZOOM + ')';
+    }
+
+    function zoomAt(cx, cy) {
+        var img = currentImg();
+        if (!img) return;
+        var rect = img.getBoundingClientRect();
+        img.style.transformOrigin =
+            ((cx - rect.left) / rect.width) * 100 + '% ' + ((cy - rect.top) / rect.height) * 100 + '%';
+        panX = panY = baseX = baseY = 0;
+        applyTransform(img);
+        zoomed = true;
+        viewer.classList.add('is_zoomed');
+    }
+
+    function resetZoom() {
+        if (!zoomed) return;
+        var imgs = track.querySelectorAll('img');
+        for (var i = 0; i < imgs.length; i++) {
+            imgs[i].style.transform = '';
+            imgs[i].style.transformOrigin = '';
+            imgs[i].style.transition = '';
+        }
+        panX = panY = baseX = baseY = 0;
+        zoomed = false;
+        dragging = false;
+        viewer.classList.remove('is_zoomed');
+    }
+
+    function toggleZoom(cx, cy) {
+        if (zoomed) resetZoom();
+        else zoomAt(cx, cy);
+    }
+
+    track.addEventListener('dblclick', function (e) {
+        toggleZoom(e.clientX, e.clientY);
+    });
+
+    track.addEventListener('pointerdown', function (e) {
+        if (!zoomed) return;
+        dragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        var img = currentImg();
+        if (img) img.style.transition = 'none';
+        try { track.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+
+    track.addEventListener('pointermove', function (e) {
+        if (!dragging) return;
+        var img = currentImg();
+        if (!img) return;
+        panX = baseX + (e.clientX - startX);
+        panY = baseY + (e.clientY - startY);
+        applyTransform(img);
+    });
+
+    function endDrag() {
+        if (!dragging) return;
+        dragging = false;
+        baseX = panX;
+        baseY = panY;
+        var img = currentImg();
+        if (img) img.style.transition = '';
+    }
+    track.addEventListener('pointerup', endDrag);
+    track.addEventListener('pointercancel', endDrag);
+
+    track.addEventListener('touchend', function (e) {
+        if (e.touches.length) return;
+        var t = e.changedTouches[0];
+        if (!t) return;
+        var now = Date.now();
+        var near = Math.abs(t.clientX - lastTapX) < 30 && Math.abs(t.clientY - lastTapY) < 30;
+        if (now - lastTap < 300 && near) {
+            e.preventDefault();
+            toggleZoom(t.clientX, t.clientY);
+            lastTap = 0;
+            return;
+        }
+        lastTap = now;
+        lastTapX = t.clientX;
+        lastTapY = t.clientY;
+    });
+
+    // 사진 바깥 여백을 누르면 닫는다. 사진 위는 확대 동작에 쓰므로 닫지 않는다.
+    track.addEventListener('click', function (e) {
+        if (zoomed) return;
+        if (e.target.tagName === 'IMG') return;
+        close();
+    });
+})();
+</script>
 </html>
