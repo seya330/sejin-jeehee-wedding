@@ -10446,15 +10446,21 @@ em.space {
 .section_photos{padding:var(--section-margin)}
 .section_photos .title{margin-bottom:14px}
 .photo_hint{display:flex;align-items:center;justify-content:center;gap:7px;margin:0 0 20px;font-size:var(--font-small);color:#a09c94;letter-spacing:.02em}
-.photo_hint svg{width:24px;height:12px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.photo_hint svg{display:none;width:24px;height:12px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.photo_hint.is_ready svg{display:block}
 .photo_hint svg path{animation:photoHintArrow 1.6s ease-in-out infinite}
 .photo_hint svg path:nth-child(2){animation-delay:.18s}
 .photo_hint svg path:nth-child(3){animation-delay:.36s}
 @keyframes photoHintArrow{0%,100%{opacity:.25}50%{opacity:1}}
 .photo_scroll{display:flex;gap:9px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-padding-left:24px;padding:0 24px 2px;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
-.photo_scroll .photo_item{flex:0 0 68%;scroll-snap-align:start;display:block;margin:0;padding:0;border:0;border-radius:3px;overflow:hidden;background:#efece6;aspect-ratio:3/4;cursor:pointer}
+.photo_scroll .photo_item{flex:0 0 68%;scroll-snap-align:start;display:block;margin:0;padding:0;border:0;border-radius:3px;overflow:hidden;background:#e7e2d8;aspect-ratio:3/4;cursor:pointer}
 .photo_scroll .photo_item img{display:block;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .45s ease}
-.photo_scroll .photo_item img.is_loaded{opacity:1}
+.photo_scroll .photo_item.is_loaded img{opacity:1}
+.photo_scroll .photo_item.is_skeleton{cursor:default}
+/* 사진이 아직 없거나 아직 안 불러온 칸은 스켈레톤으로 둔다 */
+.photo_scroll .photo_item:not(.is_loaded){background-image:linear-gradient(100deg,rgba(255,255,255,0) 20%,rgba(255,255,255,.5) 50%,rgba(255,255,255,0) 80%);background-size:220% 100%;background-repeat:no-repeat;animation:photoShimmer 1.6s ease-in-out infinite}
+@keyframes photoShimmer{0%{background-position:-60% 0}100%{background-position:160% 0}}
+@media (prefers-reduced-motion:reduce){.photo_scroll .photo_item:not(.is_loaded){animation:none}}
 
 /* 사진 크게 보기 */
 .photo_viewer{position:fixed;top:0;left:0;width:100%;height:100%;z-index:2000;background:#000;font-family:var(--font-family,GowunDodum-Regular,serif)}
@@ -12355,20 +12361,24 @@ em.space {
                 
 
                 
-                <section class="section_photos" id="photoStrip" style="display:none">
+                <section class="section_photos" id="photoStrip">
                     <div class="inner">
                         <div class="title">
                             <h2>우리의 순간</h2>
                         </div>
-                        <div class="photo_hint">
-                            <span>옆으로 넘겨보세요</span>
+                        <div class="photo_hint" id="photoHint">
+                            <span id="photoHintText">사진을 준비하고 있습니다</span>
                             <svg viewBox="0 0 27 16" aria-hidden="true" focusable="false">
                                 <path d="m4 4 4 4-4 4"/>
                                 <path d="m11 4 4 4-4 4"/>
                                 <path d="m18 4 4 4-4 4"/>
                             </svg>
                         </div>
-                        <div class="photo_scroll" id="photoScroll"></div>
+                        <div class="photo_scroll" id="photoScroll" aria-busy="true">
+                            <div class="photo_item is_skeleton"></div>
+                            <div class="photo_item is_skeleton"></div>
+                            <div class="photo_item is_skeleton"></div>
+                        </div>
                     </div>
                 </section>
 
@@ -12803,10 +12813,13 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
     var viewer = document.getElementById('photoViewer');
     var track = document.getElementById('photoViewerTrack');
     var countBox = document.getElementById('photoViewerCount');
+    var hint = document.getElementById('photoHint');
+    var hintText = document.getElementById('photoHintText');
     var closeBtn = document.getElementById('photoViewerClose');
     if (!strip || !scroll || !viewer || !track) return;
 
     var photos = Array.isArray(window.WEDDING_PHOTOS) ? window.WEDDING_PHOTOS.filter(Boolean) : [];
+    // 사진이 아직 없으면 마크업에 있는 스켈레톤을 그대로 둔다.
     if (!photos.length) return;
 
     var current = 0;
@@ -12831,15 +12844,21 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
             img.alt = '';
             img.loading = 'lazy';
             img.decoding = 'async';
-            img.addEventListener('load', function () { img.classList.add('is_loaded'); });
+            // 실패해도 스켈레톤이 계속 돌지 않도록 둘 다 처리한다.
+            var done = function () { btn.classList.add('is_loaded'); };
+            img.addEventListener('load', done);
+            img.addEventListener('error', done);
             img.src = src(name);
 
             btn.appendChild(img);
             btn.addEventListener('click', function () { open(i); });
             frag.appendChild(btn);
         });
+        scroll.innerHTML = '';
         scroll.appendChild(frag);
-        strip.style.display = 'block';
+        scroll.removeAttribute('aria-busy');
+        hintText.textContent = '옆으로 넘겨보세요';
+        hint.classList.add('is_ready');
     })();
 
     /* 크게 보기 */
