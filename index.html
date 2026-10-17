@@ -10509,13 +10509,17 @@ em.space {
 .photo_viewer{position:fixed;top:0;left:0;width:100%;height:100%;z-index:2000;background:#000;font-family:var(--font-family,GowunDodum-Regular,serif)}
 .photo_viewer[hidden]{display:none}
 .photo_viewer *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-.photo_viewer .pv_track{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:none;-ms-overflow-style:none}
+/* touch-action:pan-x: 좌우 넘기기는 브라우저 스크롤에 맡기고, 세로 움직임은 스크립트(아래로 끌어 닫기)가 받는다 */
+.photo_viewer .pv_track{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-width:none;-ms-overflow-style:none;touch-action:pan-x}
 .photo_viewer .pv_track::-webkit-scrollbar{display:none}
 .photo_viewer.is_zoomed .pv_track{overflow:hidden;touch-action:none;scroll-snap-type:none}
 .photo_viewer .pv_slide{flex:0 0 100%;height:100%;scroll-snap-align:center;display:flex;align-items:center;justify-content:center;padding:54px 0 64px}
 .photo_viewer .pv_slide img{max-width:100%;max-height:100%;object-fit:contain;transform-origin:center center;transition:transform .25s ease;-webkit-user-select:none;user-select:none;-webkit-user-drag:none}
 .photo_viewer .pv_close{position:absolute;top:4px;right:4px;display:flex;align-items:center;justify-content:center;width:48px;height:48px;padding:0;border:0;background:none;color:#fff;font-size:28px;line-height:1;text-shadow:0 1px 3px rgba(0,0,0,.65);z-index:2;cursor:pointer}
 .photo_viewer .pv_count{position:absolute;left:0;right:0;bottom:24px;text-align:center;color:rgba(255,255,255,.85);font-size:13px;letter-spacing:.1em;text-shadow:0 1px 3px rgba(0,0,0,.65);z-index:2;pointer-events:none}
+/* 아래로 끌어 닫기: 손을 떼면 끝까지 내려가거나 제자리로 돌아온다. 시간은 스크립트의 SETTLE_MS 와 같다 */
+.photo_viewer.is_settling,.photo_viewer.is_settling .pv_track,.photo_viewer.is_settling .pv_close,.photo_viewer.is_settling .pv_count{transition:transform .25s ease,background-color .25s ease,opacity .25s ease}
+@media (prefers-reduced-motion:reduce){.photo_viewer.is_settling,.photo_viewer.is_settling .pv_track,.photo_viewer.is_settling .pv_close,.photo_viewer.is_settling .pv_count{transition:none}}
 /* 이미지 스켈레톤
    메인 사진, 약도, 사진 스트립, 크게 보기 모두 이미지를 받기 전에는 반짝이는 바탕 위에
    하트 로고와 그 둘레를 도는 로딩 링을 띄운다. 받아오면(실패해도) .is_loaded 가 붙어 멈춘다.
@@ -13017,6 +13021,15 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
             e.stopPropagation();
             e.preventDefault();
         }, true);
+
+        return {
+            // 다른 동작(아래로 끌어 닫기)이 끌기를 가져가면 좌우 위치를 되돌리고 멈춘다.
+            cancel: function () {
+                if (!down) return;
+                el.scrollLeft = startLeft;
+                end();
+            }
+        };
     }
 
     enableMouseDrag(scroll);
@@ -13064,7 +13077,7 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         hint.classList.add('is_ready');
     })();
 
-    enableMouseDrag(track, function () { return zoomed; });
+    var trackDrag = enableMouseDrag(track, function () { return zoomed; });
 
     /* 크게 보기 */
     function build() {
@@ -13118,6 +13131,8 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
 
     function close() {
         resetZoom();
+        pull = null;
+        clearPull();
         viewer.hidden = true;
         unlockScroll();
         document.removeEventListener('keydown', onKey);
@@ -13239,6 +13254,8 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
 
     track.addEventListener('touchend', function (e) {
         if (e.touches.length) return;
+        // 끌어 내리던 손을 뗀 것은 탭이 아니다
+        if (pulled) { lastTap = 0; return; }
         var t = e.changedTouches[0];
         if (!t) return;
         var now = Date.now();
@@ -13253,6 +13270,82 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         lastTapX = t.clientX;
         lastTapY = t.clientY;
     });
+
+    /* 아래로 끌어 닫기: 확대하지 않은 사진을 아래로 끌면 손가락을 따라 내려가고 배경이 옅어진다.
+       화면 높이의 20%(최소 100px)를 넘기거나 아래로 빠르게 튕기면 끝까지 내려가며 닫힌다.
+       덜 끌면 제자리로 돌아온다. 좌우 넘기기는 브라우저 스크롤에 맡기고(.pv_track 의 touch-action:pan-x),
+       처음 움직임이 아래쪽 세로일 때만 잡는다. 마우스도 같은 방식으로 끌 수 있다. */
+    var PULL_LOCK = 10;   // 이만큼 움직인 뒤에 방향을 정한다
+    var SETTLE_MS = 250;  // CSS .is_settling 의 transition 시간과 같다
+    var pull = null;      // 누른 뒤 아직 떼지 않은 상태
+    var pulled = false;   // 이번 누름에서 끌어 내렸는지. 이어지는 click 과 더블탭 판정을 막는다.
+
+    function setPull(dy) {
+        var p = Math.max(dy, 0) / (viewer.clientHeight || window.innerHeight);
+        track.style.transform = 'translateY(' + dy + 'px) scale(' + (1 - Math.min(p, 1) * 0.15) + ')';
+        viewer.style.backgroundColor = 'rgba(0,0,0,' + Math.max(1 - p * 2, 0) + ')';
+        closeBtn.style.opacity = countBox.style.opacity = Math.max(1 - p * 4, 0);
+    }
+
+    function clearPull() {
+        viewer.classList.remove('is_settling');
+        track.style.transform = viewer.style.backgroundColor = closeBtn.style.opacity = countBox.style.opacity = '';
+    }
+
+    track.addEventListener('pointerdown', function (e) {
+        if (zoomed || !e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return;
+        if (viewer.classList.contains('is_settling')) return;
+        pulled = false;
+        pull = { id: e.pointerId, x: e.clientX, y: e.clientY, dy: 0, v: 0, t: e.timeStamp, active: false };
+    });
+
+    track.addEventListener('pointermove', function (e) {
+        if (!pull || e.pointerId !== pull.id) return;
+        var dx = e.clientX - pull.x, dy = e.clientY - pull.y;
+        if (!pull.active) {
+            if (Math.abs(dx) < PULL_LOCK && Math.abs(dy) < PULL_LOCK) return;
+            // 좌우나 위쪽으로 먼저 움직였으면 이번 누름은 넘기기다.
+            if (dy <= 0 || Math.abs(dy) < Math.abs(dx)) { pull = null; return; }
+            pull.active = true;
+            pulled = true;
+            trackDrag.cancel();
+            try { track.setPointerCapture(e.pointerId); } catch (err) {}
+        }
+        e.preventDefault();
+        var y = dy > 0 ? dy : dy * 0.3;  // 처음 자리보다 위로는 조금만 따라온다
+        if (e.timeStamp > pull.t) pull.v = (y - pull.dy) / (e.timeStamp - pull.t);
+        pull.dy = y;
+        pull.t = e.timeStamp;
+        setPull(y);
+    });
+
+    function endPull(e, cancelled) {
+        if (!pull || e.pointerId !== pull.id) return;
+        var p = pull;
+        pull = null;
+        if (!p.active) return;
+        var h = viewer.clientHeight || window.innerHeight;
+        // 떼기 직전까지 아래로 빠르게 움직였으면 튕긴 것으로 본다. 멈췄다가 떼면 거리로만 판단한다.
+        var flick = e.timeStamp - p.t < 100 && p.v > 0.5 && p.dy > 30;
+        viewer.classList.add('is_settling');
+        if (!cancelled && (p.dy > Math.max(100, h * 0.2) || flick)) {
+            setPull(h);
+            setTimeout(close, SETTLE_MS);
+        } else {
+            setPull(0);
+            setTimeout(clearPull, SETTLE_MS);
+        }
+    }
+    track.addEventListener('pointerup', function (e) { endPull(e, false); });
+    track.addEventListener('pointercancel', function (e) { endPull(e, true); });
+
+    // 끌어 내린 뒤 이어지는 click 은 무시한다. 바깥 여백 click 으로 처리되어 닫히면 안 된다.
+    track.addEventListener('click', function (e) {
+        if (!pulled) return;
+        pulled = false;
+        e.stopPropagation();
+        e.preventDefault();
+    }, true);
 
     // 사진 바깥 여백을 누르면 닫는다. 사진 위는 확대 동작에 쓰므로 닫지 않는다.
     track.addEventListener('click', function (e) {
