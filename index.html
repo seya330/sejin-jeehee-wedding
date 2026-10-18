@@ -13422,7 +13422,8 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
    지나쳐서 영영 숨은 채로 남았다. 스크롤마다 위치를 직접 재는 쪽이 확실하다. */
 (function () {
     var GROUPS = [
-        ['.section12 .contents'],
+        ['.section12 .greeting_names', '.section12 [var="greetingTitle"]'],
+        ['.section12 .greeting_card_copy > p'],
         ['.section3 .name_con', '.section3 .introduce_con', '.section3 .relation_con'],
         ['.section4 .table_wrap', '#dday_box'],
         ['.section6 .title', '.section6 .map_box', '.section6 .top_box', '.section6 .more_view', '.section6 .transportation'],
@@ -13435,14 +13436,14 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
     var pending = [];
     GROUPS.forEach(function (group) {
         group.forEach(function (sel, i) {
-            var el = document.querySelector(sel);
-            if (!el) return;
-            // 템플릿 AOS 가 같은 속성을 건드리지 않도록 표식을 뗀다.
-            el.removeAttribute('aos');
-            el.removeAttribute('data-aos');
-            el.classList.remove('aos-init', 'aos-animate');
-            el.style.transitionDelay = (i * STEP) + 'ms';
-            pending.push(el);
+            document.querySelectorAll(sel).forEach(function (el) {
+                // 템플릿 AOS 가 같은 속성을 건드리지 않도록 표식을 뗀다.
+                el.removeAttribute('aos');
+                el.removeAttribute('data-aos');
+                el.classList.remove('aos-init', 'aos-animate');
+                el.style.transitionDelay = (i * STEP) + 'ms';
+                pending.push(el);
+            });
         });
     });
     if (!pending.length) return;
@@ -13481,7 +13482,7 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         if (!pending.length) stop();
     }
 
-    // rAF 로 묶지 않는다. 대상이 14개 이하이고 처리될수록 줄어들어 비용이 작다.
+    // rAF 로 묶지 않는다. 대상은 처리될수록 줄어든다.
     var last = 0;
     function onScroll() {
         var now = Date.now();
@@ -13506,13 +13507,18 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
 
     // 디데이 카운터는 내용이 뒤늦게 채워져서 그 전에는 높이가 0이다. 스크롤 이벤트만
     // 기다리면 이미 지나친 뒤에 채워졌을 때 영영 숨은 채로 남는다. 다 처리될 때까지
-    // 주기적으로도 확인하고, 30초가 지나면 남은 것을 그냥 보여준다.
+    // 주기적으로도 확인한다. 인사말 문단은 읽는 속도와 관계없이 스크롤할 때 나타나게
+    // 남겨두고, 그 밖의 대상은 30초 뒤에도 숨은 채로 남지 않도록 보여준다.
     check();
     poll = setInterval(check, 400);
     setTimeout(function () {
-        pending.slice().forEach(reveal);
-        pending.length = 0;
-        stop();
+        pending = pending.filter(function (el) {
+            if (el.matches('.section12 .greeting_card_copy > p')) return true;
+            reveal(el);
+            return false;
+        });
+        if (poll) { clearInterval(poll); poll = null; }
+        if (!pending.length) stop();
     }, 30000);
 })();
 </script>
