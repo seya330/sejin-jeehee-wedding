@@ -2762,10 +2762,11 @@ table {
 </style>
     <style>
         :root {
+            --invitation-red: #d60e1f;
             --common-font-color: #383737;
             --btn-font-color: #ffffff;
-            --point-color1: #43573a;
-            --point-color2: #516349;
+            --point-color1: var(--invitation-red);
+            --point-color2: var(--invitation-red);
             --font-family: GowunDodum-Regular, serif;
             --font-size: 15px;
             --background : #ffffff;
@@ -2775,10 +2776,10 @@ table {
             --wax-paper: url("https://salondeletter.com/img/_f/wax/paper_white.jpg");
 
             --wax-stamp: url("https://salondeletter.com/img/_f/wax/wax_red.png");
-            --wax-stamp-color: #832b33;
+            --wax-stamp-color: var(--invitation-red);
 
             --svg-stroke-color: ;
-            --main-svg-color: #d97e9f;
+            --main-svg-color: var(--invitation-red);
             --main-svg-length: 4112;
             --main-svg-polaroid-length: 4111.115234375;
 
@@ -2789,8 +2790,8 @@ table {
             --snap-bg: #f8f4f1;
             --loading-draw-speed: 3000;
             --main-draw-speed: 3000;
-            --groom-color: #5f8b9b;
-            --bride-color: #BB7273;
+            --groom-color: var(--invitation-red);
+            --bride-color: var(--invitation-red);
         }
     </style>
     <style>
@@ -2808,12 +2809,12 @@ table {
 :root {
 	/*color*/
 
-	--dark-pink: #BB7273;
+	--dark-pink: var(--invitation-red);
 	--light-pink: #ECBEBD;
 	--ivory: #F5F3ED;
 	--dark-blue: #5f8b9b;
 	--light-blue: #497bf8;
-	--red: #DD4241;
+	--red: var(--invitation-red);
 	--footer: #232626;
 	--line-color: #d0d2d5;
 	--black: #050D19;
@@ -4751,7 +4752,7 @@ section .contents h4 {
 }
 #user_wrap .header .header_name i {
 	font-size: var(--font-xsmall);
-	color: #ffa9a9;
+	color: var(--invitation-red);
 	margin: 0 1px;
 }
 #user_wrap .header .header_name small {}
@@ -9552,7 +9553,7 @@ span.char_box {
 
 
 .chk_title .essential {
-	color : #DD4241;
+	color : var(--invitation-red);
 }
 #user_wrap .m_wrap .form .chk_wrap2 input[type=checkbox] + label{
 
@@ -9873,7 +9874,7 @@ em.space {
     overflow-wrap: break-word;
 }
 #user_wrap .wedding_reminder .reminder_status:empty { display: none; }
-#user_wrap .wedding_reminder .reminder_status.is_error { color: #a0443d; }
+#user_wrap .wedding_reminder .reminder_status.is_error { color: var(--invitation-red); }
 #user_wrap .wedding_reminder .reminder_consent {
     display: flex;
     align-items: flex-start;
@@ -10440,7 +10441,7 @@ em.space {
 .section12 .contents .greeting_names{display:flex;justify-content:center;align-items:baseline;gap:5px;margin:0 0 22px;font-family:'GowunDodum-Regular',sans-serif;font-size:22px;font-weight:400;line-height:1.5;color:#222}
 .section12 .contents .greeting_names span{font-family:inherit;font-size:inherit;font-weight:inherit}
 .section12 .contents .greeting_names small{font-family:inherit;font-size:50%;font-weight:400}
-.section12 .contents h4{font-family:'GowunDodum-Regular',sans-serif;color:#d60e1f;text-shadow:none}
+.section12 .contents h4{font-family:'GowunDodum-Regular',sans-serif;color:var(--invitation-red);text-shadow:none}
 .section12 .greeting_card_copy{word-break:keep-all;overflow-wrap:break-word;line-height:1.9}
 .section12 .greeting_card_copy p+p{margin-top:26px}
 .personalized_venue_map{display:block;width:100%;height:auto!important;object-fit:contain}
@@ -10471,10 +10472,10 @@ em.space {
 .section6 .locate_name{font-size:20px!important;line-height:1.7}.section4 .c_location{line-height:1.8}.section4 .img_box{display:none!important}
 .section12 [var="greetingContent"]{line-height:2.1}
 /* 하트 표시: 달력 예식일과 디데이 카운터
-   색은 아래 SVG 의 fill(%23cf000e = rgb(207,0,14)) 한 곳만 고치면 된다.
+   하트의 SVG fill은 PDF 레드 #d60e1f로 맞춘다. --invitation-red 변경 시 함께 갱신한다.
    mask 가 아니라 background-image 인 이유: mask 는 filter 보다 나중에 적용돼서
    drop-shadow 가 통째로 잘려 나간다. 배경 이미지로 그려야 하트 모양 그림자가 생긴다. */
-:root{--heart-img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23cf000e' d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E")}
+:root{--heart-img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23d60e1f' d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E")}
 .section4 .table_wrap.type_2 table tbody tr td.active::before,
 .section4 .table_wrap table tbody td.active::before{width:36px;height:36px;border-radius:0;box-shadow:none;background:var(--heart-img) no-repeat center/contain}
 .section4 .table_wrap table tbody tr td.active{isolation:isolate}
@@ -10549,7 +10550,7 @@ em.space {
 .photo_viewer .pv_slide:not(.is_loaded)::before{content:"";position:absolute;top:50%;left:50%;width:18px;height:18px;margin:-9px 0 0 -9px;background:var(--heart-img) center/contain no-repeat;pointer-events:none}
 .img_skel:not(.is_loaded)::after,
 .photo_scroll .photo_item:not(.is_loaded)::after,
-.photo_viewer .pv_slide:not(.is_loaded)::after{content:"";position:absolute;top:50%;left:50%;width:44px;height:44px;margin:-22px 0 0 -22px;box-sizing:border-box;border:2px solid rgba(207,0,14,.15);border-top-color:#cf000e;border-radius:50%;animation:skelSpin .9s linear infinite;pointer-events:none}
+.photo_viewer .pv_slide:not(.is_loaded)::after{content:"";position:absolute;top:50%;left:50%;width:44px;height:44px;margin:-22px 0 0 -22px;box-sizing:border-box;border:2px solid rgba(214,14,31,.15);border-top-color:var(--invitation-red);border-radius:50%;animation:skelSpin .9s linear infinite;pointer-events:none}
 @keyframes skelSpin{to{transform:rotate(360deg)}}
 /* 움직임을 줄인 환경에서도 받는 중이라는 표시는 남겨야 하므로 링은 멈추지 않고 느리게 돈다 */
 @media (prefers-reduced-motion:reduce){
@@ -10566,7 +10567,7 @@ em.space {
    introFade 의 지연 4s 는 rect 가 다 채워지는 시각 3s 에 1초를 더한 값이다. SVG 를 다시 만들면 같이 고친다. */
 .intro_overlay{position:fixed;top:0;right:0;bottom:0;left:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:#fff;animation:introFade 1s ease-in-out 4s forwards}
 .intro_write{display:block;width:min(278px,71.4vw);height:auto;overflow:visible}
-.intro_write .intro_ink{fill:rgb(218,42,52)}
+.intro_write .intro_ink{fill:var(--invitation-red)}
 .intro_write mask path{fill:none;stroke:#fff;stroke-linecap:round;stroke-linejoin:round;animation-name:introWrite;animation-timing-function:linear;animation-fill-mode:forwards}
 .intro_write mask rect{fill:#fff;opacity:0;animation-name:introInkRest;animation-timing-function:linear;animation-fill-mode:forwards}
 @keyframes introWrite{to{stroke-dashoffset:0}}
