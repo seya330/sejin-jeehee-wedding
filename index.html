@@ -10444,6 +10444,7 @@ em.space {
 .section12 .contents h4{font-family:'GowunDodum-Regular',sans-serif;color:var(--invitation-red);text-shadow:none}
 .section12 .greeting_card_copy{word-break:keep-all;overflow-wrap:break-word;line-height:1.9}
 .section12 .greeting_card_copy p+p{margin-top:26px}
+.section12 .greeting_card_copy .greeting_quote{color:var(--invitation-red)}
 .personalized_venue_map{display:block;width:100%;height:auto!important;object-fit:contain}
 .section6 .top_box{margin-top:28px;padding:0 18px;line-height:1.9;word-break:keep-all}
 .section6 .top_box .locate_name,.section6 .top_box .locate_hall{font-size:var(--font-medium)!important;font-weight:400;line-height:1.9}
@@ -10667,7 +10668,7 @@ M337.7 297.2Q333.3 297.2 331.4 293.9Q329.5 290.5 329.5 285.6Q329.5 281.6 330.6 2
         <div class="music_btn_box preview_resize" var="useBgm">
             <button class="xi-volume-off2 mute" onclick="bgm.play();" aria-label="배경음악 재생" style="display: none"><i class="xi-volume-off"></i></button>
             <button class="xi-music2 mute" onclick="bgm.stop();" aria-label="배경음악 끄기" style="display: none"><i class="xi-music"></i></button>
-            <audio loop id="bgm" style="display: none" auto="true" volum="1.0" preload="metadata">
+            <audio autoplay loop id="bgm" style="display: none" auto="true" volum="1.0" preload="metadata">
                 
                 <source type="audio/mp4" src="assets/bgm.m4a?v=20261018-full">
             </audio>
@@ -10840,7 +10841,7 @@ M337.7 297.2Q333.3 297.2 331.4 293.9Q329.5 290.5 329.5 285.6Q329.5 281.6 330.6 2
                         <h3 class="greeting_names"><span>조세진</span><small>그리고</small><span>이지희</span></h3>
                         <h4 var="greetingTitle">우리의 결혼식에 초대합니다.</h4>
                         <div var="greetingContent" class="utext greeting_card_copy">
-                            <p>“We changed each other’s chemistry.”<br>— 영화 〈엘리멘탈〉 중 —</p>
+                            <p><span class="greeting_quote">“We changed each other’s chemistry.”</span><br>— 영화 〈엘리멘탈〉 중 —</p>
                             <p>서로를 닮아가는 모습이 좋은 건,<br>함께할수록 더 나다워지기 때문일까요?</p>
                             <p>함께하며 서로의 좋은 모습을 닮아가고,<br>성장하며 더 나은 우리가 되었습니다.</p>
                             <p>그렇게 함께하는 시간이 좋아<br>이제 평생 서로의 곁을 지키려 합니다.</p>
@@ -13516,25 +13517,30 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
 })();
 </script>
 <script>
-/* 긴 배경음악은 전체 파일을 미리 받지 않고 브라우저가 필요한 구간부터 불러온다.
-   자동재생이 막혔을 때의 안내는 첫 화면 오버레이가 끝난 뒤 표시한다. */
+/* 인트로와 함께 음악을 재생하고, 자동재생이 제한되면 첫 사용자 입력에서 다시 시도한다.
+   사용자가 끈 뒤에는 자동으로 켜지지 않으며 음원은 필요한 구간부터 불러온다. */
 (function () {
     var audio = document.getElementById('bgm');
     if (!audio || typeof bgm === 'undefined') return;
+    var playButton = document.querySelector('.music_btn_box .xi-volume-off2');
+    var stopButton = document.querySelector('.music_btn_box .xi-music2');
+    var guide = document.querySelector('.user_music_box p');
+    var userStopped = false;
+    var initialized = false;
+    var pendingPlay = null;
+    var guideQueued = false;
+    var guideTimer;
+    var gestureEvents = ['pointerup', 'touchend', 'keydown'];
     audio.loop = true;
 
-    var openGuide = bgm.openGuide;
-    var guideQueued = false;
-    bgm.openGuide = function () {
-        bgm.stop();
-        if (guideQueued) return;
-        guideQueued = true;
-        afterIntro(function () {
-            guideQueued = false;
-            if (audio.paused) openGuide.call(bgm);
-        });
-    };
-
+    function syncButtons() {
+        playButton.style.display = audio.paused ? '' : 'none';
+        stopButton.style.display = audio.paused ? 'none' : '';
+    }
+    function hideGuide() {
+        clearTimeout(guideTimer);
+        if (guide) guide.style.display = 'none';
+    }
     function afterIntro(fn) {
         var intro = document.querySelector('.intro_overlay');
         if (!intro || getComputedStyle(intro).visibility === 'hidden') { fn(); return; }
@@ -13544,6 +13550,80 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
             fn();
         });
     }
+    function showGuide() {
+        if (guideQueued || userStopped || !audio.paused) return;
+        guideQueued = true;
+        afterIntro(function () {
+            guideQueued = false;
+            if (userStopped || !audio.paused || !guide) return;
+            guide.textContent = '화면을 터치하면 배경음악이 재생됩니다.';
+            guide.style.display = 'block';
+            guideTimer = setTimeout(hideGuide, 2500);
+        });
+    }
+    function removeGestureListeners() {
+        gestureEvents.forEach(function (name) {
+            document.removeEventListener(name, onFirstGesture, true);
+        });
+    }
+    function onPlaying() {
+        if (userStopped) { audio.pause(); return; }
+        hideGuide();
+        syncButtons();
+        removeGestureListeners();
+    }
+    function tryPlay() {
+        if (userStopped) return Promise.resolve(false);
+        if (pendingPlay) return pendingPlay;
+        audio.muted = false;
+        audio.volume = Math.max(0, Math.min(1, Number(audio.getAttribute('volum')) || 1));
+        var result;
+        try { result = audio.play(); }
+        catch (error) { syncButtons(); showGuide(); return Promise.resolve(false); }
+        pendingPlay = Promise.resolve(result).then(function () {
+            pendingPlay = null;
+            if (userStopped) { audio.pause(); return false; }
+            onPlaying();
+            return true;
+        }, function (error) {
+            pendingPlay = null;
+            syncButtons();
+            if (!userStopped && error.name !== 'AbortError') showGuide();
+            return false;
+        });
+        return pendingPlay;
+    }
+    function onFirstGesture(event) {
+        if (userStopped || !audio.paused) return;
+        if (event.target && event.target.closest && event.target.closest('.music_btn_box')) return;
+        tryPlay();
+    }
+    bgm.play = function () {
+        userStopped = false;
+        return tryPlay();
+    };
+    bgm.stop = function () {
+        userStopped = true;
+        audio.autoplay = false;
+        audio.pause();
+        hideGuide();
+        removeGestureListeners();
+        syncButtons();
+    };
+    bgm.openGuide = showGuide;
+    bgm.init = function () {
+        if (initialized) return;
+        initialized = true;
+        gestureEvents.forEach(function (name) {
+            document.addEventListener(name, onFirstGesture, true);
+        });
+        syncButtons();
+        if (audio.paused) tryPlay();
+        else onPlaying();
+    };
+    audio.addEventListener('playing', onPlaying);
+    audio.addEventListener('pause', syncButtons);
+    bgm.init();
 })();
 </script>
 </html>
