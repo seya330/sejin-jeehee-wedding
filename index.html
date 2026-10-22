@@ -10452,8 +10452,11 @@ em.space {
 .section6 .top_box .locate_address,.section6 .top_box .locate_tel{margin-top:6px}
 .section6 .top_box .locate_tel{display:block;text-align:center;font-size:var(--font-medium);color:inherit}
 .section6 .trans_text{word-break:keep-all;overflow-wrap:break-word;line-height:1.9}
-.personalized_ending{padding:65px 25px 130px!important;text-align:center;background:rgb(252,241,242)}
-.personalized_ending p{font-family:'GowunDodum-Regular',sans-serif;line-height:1.9;color:var(--invitation-red)}
+.personalized_ending{padding:65px 25px 130px!important;text-align:center;background:rgb(252,241,242);font-family:'GowunDodum-Regular',sans-serif;line-height:1.9}
+.personalized_ending .ending_message{color:var(--invitation-red)}
+.personalized_ending .ending_accounts{margin-top:30px}
+.personalized_ending .gift_accounts summary{font-size:inherit;color:var(--invitation-red)}
+.personalized_ending .gift_account_card h3,.personalized_ending .gift_account_card h3 span,.personalized_ending .gift_account_bank,.personalized_ending .gift_account_number{font-size:inherit}
 .section3 .relation_con{margin-top:24px!important}.section3 .name_con{margin-top:0!important}
 /* 스크롤 등장 효과
    템플릿 AOS 는 섹션마다 동작이 들쭉날쭉해서(.section4 는 아예 숨은 채로 남았다)
@@ -10498,6 +10501,27 @@ em.space {
 /* 사진 스트립 (photos/ 폴더 기반) */
 .section_photos{padding:var(--section-margin)}
 .section_photos .title{margin-bottom:14px}
+.section_guest_note{padding:56px 24px 64px;text-align:center;font-family:'GowunDodum-Regular',sans-serif;word-break:keep-all;overflow-wrap:break-word}
+.section_guest_note .inner{max-width:420px;margin:0 auto;padding:0}
+.section_guest_note .title{margin-bottom:30px}
+.guest_note_copy{font-size:15px;line-height:2;color:#383737}
+.guest_note_copy p+p{margin-top:24px}
+.gift_accounts{max-width:344px;margin:0 auto;text-align:left;border-top:1px solid #e9dedb;border-bottom:1px solid #e9dedb}
+.gift_accounts summary{display:flex;align-items:center;justify-content:center;gap:8px;padding:18px 4px;list-style:none;cursor:pointer;font-size:15px;color:#383737}
+.gift_accounts summary::-webkit-details-marker{display:none}
+.gift_toggle_icon{display:inline-block;flex-shrink:0;font-size:.8em;line-height:1;color:var(--invitation-red)}
+.gift_accounts[open] .gift_toggle_icon{transform:rotate(180deg)}
+.gift_account_list{display:grid;gap:12px;padding:2px 0 18px}
+.gift_account_card{position:relative;padding:20px 18px;background:#fcf6f5;border-radius:8px}
+.gift_account_card h3{font-family:inherit;font-size:15px;font-weight:400;line-height:1.6;color:#383737;margin:0 0 12px}
+.gift_account_card h3 span{font-size:12px;color:#847973;margin-right:8px}
+.gift_account_bank{font-size:12px;color:#847973;margin-bottom:6px}
+.gift_account_row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.gift_account_number{font-size:17px;letter-spacing:.02em;line-height:1.6;color:#383737;white-space:nowrap;font-variant-numeric:tabular-nums}
+.gift_copy_button{font-family:inherit;flex-shrink:0;padding:8px 11px;border:1px solid #e8d6d3;border-radius:5px;background:#fff;color:#65534e;font-size:12px;cursor:pointer}
+.gift_copy_button:focus-visible,.gift_accounts summary:focus-visible{outline:2px solid var(--invitation-red);outline-offset:4px}
+.gift_copy_status{min-height:22px;margin-top:14px;font-size:12px;line-height:1.8;color:#68625e;text-align:center}
+@media(max-width:350px){.section_guest_note{padding-left:20px;padding-right:20px}.guest_note_copy{font-size:14px}.gift_account_card{padding:18px 14px}.gift_account_number{font-size:16px}.gift_copy_button{padding:8px}}
 .photo_hint{display:flex;align-items:center;justify-content:center;gap:7px;margin:0 0 20px;font-size:var(--font-small);color:#a09c94;letter-spacing:.02em}
 .photo_hint svg{display:none;width:24px;height:12px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .photo_hint.is_ready svg{display:block}
@@ -12577,7 +12601,41 @@ M337.7 297.2Q333.3 297.2 331.4 293.9Q329.5 290.5 329.5 285.6Q329.5 281.6 330.6 2
                     </div>
                 </section>
 
-                <section class="section11 personalized_ending" var="useEnding"><div class="inner"><p>함께 자리하시어 축복해 주세요.<br>감사합니다.</p></div></section>
+                <section class="section_guest_note" id="guestNote" aria-labelledby="guestNoteTitle">
+                    <div class="inner">
+                        <div class="title"><h2 id="guestNoteTitle">소중한 분들께</h2></div>
+                        <div class="guest_note_copy">
+                            <p>저희의 결혼 소식이 부담스럽지 않은<br>반가운 인사로 닿기를 바랍니다.</p>
+                            <p>함께해주실 수 있다면 편안한 마음으로 오셔서<br>저희의 시작을 축복해 주세요.</p>
+                            <p>주말 저녁, 귀한 시간을<br>내기 어려우실 수 있음을 알기에<br>혹여 참석이 어려우시더라도<br>부담 갖지 않으셨으면 합니다.</p>
+                            <p>마음으로 보내주시는 축복과 사랑만으로도<br>저희에게는 큰 기쁨입니다.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section11 personalized_ending" id="ending" var="useEnding">
+                    <div class="inner">
+                        <p class="ending_message">함께 자리하시어 축복해 주세요.<br>감사합니다.</p>
+                        <div class="ending_accounts" id="giftNote">
+                            <details class="gift_accounts">
+                                <summary>계좌 안내<span class="gift_toggle_icon" aria-hidden="true">▼</span></summary>
+                                <div class="gift_account_list">
+                                    <div class="gift_account_card">
+                                        <h3><span>신랑</span>조세진</h3>
+                                        <p class="gift_account_bank">신한은행</p>
+                                        <div class="gift_account_row"><span class="gift_account_number">110-364-525605</span><button type="button" class="gift_copy_button" data-account="110-364-525605" data-account-name="조세진" aria-label="신랑 조세진 계좌번호 복사">복사</button></div>
+                                    </div>
+                                    <div class="gift_account_card">
+                                        <h3><span>신부</span>이지희</h3>
+                                        <p class="gift_account_bank">기업은행</p>
+                                        <div class="gift_account_row"><span class="gift_account_number">010-5526-1818</span><button type="button" class="gift_copy_button" data-account="010-5526-1818" data-account-name="이지희" aria-label="신부 이지희 계좌번호 복사">복사</button></div>
+                                    </div>
+                                </div>
+                            </details>
+                            <p class="gift_copy_status" role="status" aria-live="polite"></p>
+                        </div>
+                    </div>
+                </section>
 
                 
                 
@@ -13414,6 +13472,42 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
 })();
 </script>
 <script>
+(function () {
+    var section = document.getElementById('giftNote');
+    if (!section) return;
+    var status = section.querySelector('.gift_copy_status');
+    section.querySelector('.gift_accounts').addEventListener('toggle', function () {
+        status.textContent = '';
+    });
+    section.querySelectorAll('.gift_copy_button').forEach(function (button) {
+        button.addEventListener('click', function () {
+            var number = button.getAttribute('data-account');
+            var name = button.getAttribute('data-account-name');
+            status.textContent = '';
+            function done() { status.textContent = name + ' 님의 계좌번호를 복사했어요.'; }
+            function fallback() {
+                var input = document.createElement('textarea');
+                input.value = number;
+                input.setAttribute('readonly', '');
+                input.style.cssText = 'position:fixed;top:0;left:0;opacity:0;font-size:16px';
+                document.body.appendChild(input);
+                input.select();
+                input.setSelectionRange(0, number.length);
+                var copied = false;
+                try { copied = document.execCommand('copy'); } catch (error) {}
+                input.remove();
+                button.focus({ preventScroll: true });
+                if (copied) done();
+                else status.textContent = '계좌번호를 길게 눌러 복사해 주세요.';
+            }
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(number).then(done, fallback);
+            } else fallback();
+        });
+    });
+})();
+</script>
+<script>
 /* 섹션 등장 효과: 아래에서 위로 올라오며 서서히 나타난다.
    그룹 안의 항목은 순서대로 조금씩 늦게 나타난다.
 
@@ -13428,6 +13522,7 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         ['.section4 .table_wrap', '#dday_box'],
         ['.section6 .title', '.section6 .map_box', '.section6 .top_box', '.section6 .more_view', '.section6 .transportation'],
         ['.section_photos .title', '.section_photos .photo_hint', '.section_photos .photo_scroll'],
+        ['.section_guest_note .title', '.section_guest_note .guest_note_copy > p'],
         ['.section11 .inner']
     ];
     var STEP = 90;      // 같은 묶음 안에서 밀리는 간격
@@ -13513,7 +13608,7 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
     poll = setInterval(check, 400);
     setTimeout(function () {
         pending = pending.filter(function (el) {
-            if (el.matches('.section12 .greeting_card_copy > p')) return true;
+            if (el.matches('.section12 .greeting_card_copy > p, .section_guest_note .guest_note_copy > p')) return true;
             reveal(el);
             return false;
         });
