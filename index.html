@@ -7,6 +7,46 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="format-detection" content="telephone=no">
     <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+    <script>
+    // 처음 열거나 새로고침할 때 이전 스크롤 위치와 전달된 섹션 주소를 초기화한다.
+    (function () {
+        var opening = true;
+        try {
+            history.scrollRestoration = 'manual';
+            if (location.hash) {
+                history.replaceState(history.state, '', location.pathname + location.search);
+            }
+        } catch (error) {}
+        function startAtTop() {
+            if (!opening) return;
+            var root = document.documentElement;
+            var behavior = root.style.getPropertyValue('scroll-behavior');
+            var priority = root.style.getPropertyPriority('scroll-behavior');
+            root.style.setProperty('scroll-behavior', 'auto', 'important');
+            window.scrollTo(0, 0);
+            if (behavior) root.style.setProperty('scroll-behavior', behavior, priority);
+            else root.style.removeProperty('scroll-behavior');
+        }
+        startAtTop();
+        window.addEventListener('pageshow', startAtTop);
+        document.addEventListener('DOMContentLoaded', function () {
+            startAtTop();
+            var intro = document.querySelector('.intro_overlay');
+            if (!intro) {
+                opening = false;
+                window.removeEventListener('pageshow', startAtTop);
+                return;
+            }
+            intro.addEventListener('animationend', function finishOpening(event) {
+                if (event.target !== intro || event.animationName !== 'introFade') return;
+                startAtTop();
+                opening = false;
+                intro.removeEventListener('animationend', finishOpening);
+                window.removeEventListener('pageshow', startAtTop);
+            });
+        }, { once: true });
+    })();
+    </script>
 
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://seya330.github.io/sejin-jeehee-wedding/">
