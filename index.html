@@ -7,6 +7,44 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="format-detection" content="telephone=no">
     <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+    <script id="touchZoomGuard">
+    (function () {
+        var multiTouch = false;
+        var active = { capture: true, passive: false };
+        var passive = { capture: true, passive: true };
+
+        function cancel(event) {
+            if (event.cancelable) event.preventDefault();
+        }
+        function start(event) {
+            if (event.touches.length === 1) multiTouch = false;
+            if (event.touches.length > 1) {
+                multiTouch = true;
+                cancel(event);
+            }
+        }
+        function move(event) {
+            var scaling = typeof event.scale === 'number' && Math.abs(event.scale - 1) > .001;
+            if (event.touches.length > 1) multiTouch = true;
+            if (multiTouch || scaling) cancel(event);
+        }
+        function finish(event) {
+            if (!event.touches.length) multiTouch = false;
+        }
+
+        // 한 손가락 스크롤은 유지하고 두 손가락 확대 제스처만 차단한다.
+        document.addEventListener('touchstart', start, active);
+        document.addEventListener('touchmove', move, active);
+        document.addEventListener('touchend', finish, passive);
+        document.addEventListener('touchcancel', finish, passive);
+        ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (name) {
+            document.addEventListener(name, cancel, active);
+        });
+        document.addEventListener('wheel', function (event) {
+            if (event.ctrlKey) cancel(event);
+        }, active);
+    })();
+    </script>
     <script>
     // 처음 열거나 새로고침할 때 이전 스크롤 위치와 전달된 섹션 주소를 초기화한다.
     (function () {
