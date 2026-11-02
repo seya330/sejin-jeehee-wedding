@@ -10611,6 +10611,13 @@ em.space {
 #photoStrip .photo_heading{position:absolute;top:8%;left:0;width:100%;z-index:2;text-align:center}
 #photoStrip .photo_heading p{margin:0 0 2cqw;font-family:'GowunDodum-Regular',sans-serif;font-size:2.6cqw;line-height:1.5;letter-spacing:.22em;color:var(--invitation-red)}
 #photoStrip .photo_heading h2{margin:0;font-family:'WindSong-Regular',cursive;font-size:10.5cqw;font-weight:400;line-height:1.2;letter-spacing:normal;color:var(--invitation-red)}
+#photoStrip .photo_hint{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:4cqw;font-family:'GowunDodum-Regular',sans-serif;font-size:3.1cqw;line-height:1.6;letter-spacing:.02em;color:#a09c94}
+.photo_hint svg{display:block;width:24px;height:12px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.photo_hint svg path{animation:photoHintArrow 1.6s ease-in-out infinite;animation-play-state:paused}
+.photo_hint svg path:nth-child(2){animation-delay:.18s}
+.photo_hint svg path:nth-child(3){animation-delay:.36s}
+.photo_board.is_in_view .photo_hint svg path{animation-play-state:running}
+@keyframes photoHintArrow{0%,100%{opacity:.25}50%{opacity:1}}
 .photo_lights{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
 .photo_lights path{fill:none;stroke:#a69874;stroke-width:.7;opacity:.7}
 .photo_twine{position:absolute;left:-2.5%;top:34.3%;width:105%;height:6.2%;z-index:1;background:url("assets/jute-twine.webp") center/100% 100% no-repeat;filter:drop-shadow(.2cqw .65cqw .35cqw #71503245);pointer-events:none}
@@ -10642,7 +10649,7 @@ em.space {
 .photo_nav:focus-visible{outline:2px solid var(--invitation-red);outline-offset:3px}
 .photo_item:not(.is_loaded) .photo_image{background-image:linear-gradient(100deg,transparent 20%,#ffffff80 50%,transparent 80%);background-size:220% 100%;animation:photoShimmer 1.6s ease-in-out infinite}
 @keyframes photoShimmer{0%{background-position:-60% 0}100%{background-position:160% 0}}
-@media(prefers-reduced-motion:reduce){.photo_print{animation:none!important}.photo_image img{transition:none}.photo_item:not(.is_loaded) .photo_image{animation:none}.photo_nav{transition:none}}
+@media(prefers-reduced-motion:reduce){.photo_print{animation:none!important}.photo_image img{transition:none}.photo_item:not(.is_loaded) .photo_image{animation:none}.photo_nav{transition:none}.photo_hint svg path{animation:none;opacity:.7}}
 
 /* 이미지 스켈레톤
    메인 사진, 약도, 사진 스트립 모두 이미지를 받기 전에는 반짝이는 바탕 위에
@@ -12671,6 +12678,14 @@ M337.7 297.2Q333.3 297.2 331.4 293.9Q329.5 290.5 329.5 285.6Q329.5 281.6 330.6 2
                             <div class="photo_heading">
                                 <p>우리의 순간</p>
                                 <h2 id="photoTitle">Our moments</h2>
+                                <div class="photo_hint">
+                                    <span>옆으로 넘겨보세요</span>
+                                    <svg viewBox="0 0 27 16" aria-hidden="true" focusable="false">
+                                        <path d="m4 4 4 4-4 4"/>
+                                        <path d="m11 4 4 4-4 4"/>
+                                        <path d="m18 4 4 4-4 4"/>
+                                    </svg>
+                                </div>
                             </div>
                             <svg class="photo_lights" viewBox="0 0 400 640" aria-hidden="true"><path d="M -10 188 C 72 210 92 257 185 236 S 302 191 410 206"/></svg>
                             <div class="photo_twine" aria-hidden="true"></div>
