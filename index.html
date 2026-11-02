@@ -10580,7 +10580,7 @@ em.space {
 #p_rsvp,.modal_rsvp,.modal_interview,.modal_board,.modal_photo{display:none!important}
 /* 사진 스트립 (photos/ 폴더 기반) */
 .section_photos{padding:var(--section-margin)}
-.section_photos .title{margin-bottom:14px}
+#photoStrip>.inner{width:100%;max-width:480px;margin:0 auto;padding:0}
 .section_guest_note{padding:56px 24px 64px;text-align:center;font-family:'GowunDodum-Regular',sans-serif;word-break:keep-all;overflow-wrap:break-word}
 .section_guest_note .inner{max-width:420px;margin:0 auto;padding:0}
 .section_guest_note .title{margin-bottom:30px}
@@ -10603,43 +10603,46 @@ em.space {
 .gift_copy_button:focus-visible,.gift_accounts summary:focus-visible{outline:2px solid var(--invitation-red);outline-offset:4px}
 .gift_copy_status{min-height:22px;margin-top:14px;font-size:12px;line-height:1.8;color:#68625e;text-align:center}
 @media(max-width:350px){.section_guest_note{padding-left:20px;padding-right:20px}.guest_note_copy{font-size:14px}.gift_account_card{padding:18px 14px}.gift_account_number{font-size:16px}.gift_copy_button{padding:8px}}
-.photo_hint{display:flex;align-items:center;justify-content:center;gap:7px;margin:0 0 20px;font-size:var(--font-small);color:#a09c94;letter-spacing:.02em}
-.photo_hint svg{display:none;width:24px;height:12px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.photo_hint.is_ready svg{display:block}
-.photo_hint svg path{animation:photoHintArrow 1.6s ease-in-out infinite}
-.photo_hint svg path:nth-child(2){animation-delay:.18s}
-.photo_hint svg path:nth-child(3){animation-delay:.36s}
-@keyframes photoHintArrow{0%,100%{opacity:.25}50%{opacity:1}}
-.photo_board{margin:0 18px;border:7px solid #95673f;border-radius:3px;background-color:#b78553;background-image:linear-gradient(110deg,#5b30100a,#ffdda021 40%,#6b381212),url("assets/camel-wood.webp");background-position:center;background-size:100% 100%,cover;box-shadow:inset 0 0 0 1px #f1c796a8,inset 3px 5px 12px #54341645,0 2px 2px #78533430,0 9px 18px #59402618;overflow:hidden}
-.photo_scroll{display:flex;gap:0;margin:0;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-padding:0;scrollbar-width:none;cursor:grab;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+/* 크림 천에 걸어 둔 사진첩 */
+.photo_board{container-type:inline-size;aspect-ratio:400/640;position:relative;overflow:hidden;isolation:isolate;background:#f3eadb;touch-action:pan-x pan-y}
+.photo_cloth{position:absolute;inset:0;z-index:-3;background:url("assets/cream-linen.webp") center/cover no-repeat}
+.photo_illumination{position:absolute;inset:0;z-index:-2;background:radial-gradient(ellipse at 15% 30%,#fffbef80,transparent 70%),linear-gradient(130deg,#fff9ef48,transparent 50%,#c8a17b0a);pointer-events:none}
+.photo_board::after{content:"";position:absolute;inset:0;z-index:9;box-shadow:inset 0 0 65px #a67d3c0d;pointer-events:none}
+#photoStrip .photo_heading{position:absolute;top:8%;left:0;width:100%;z-index:2;text-align:center}
+#photoStrip .photo_heading p{margin:0 0 2cqw;font-family:'GowunDodum-Regular',sans-serif;font-size:2.6cqw;line-height:1.5;letter-spacing:.22em;color:var(--invitation-red)}
+#photoStrip .photo_heading h2{margin:0;font-family:'WindSong-Regular',cursive;font-size:10.5cqw;font-weight:400;line-height:1.2;letter-spacing:normal;color:var(--invitation-red)}
+.photo_lights{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.photo_lights path{fill:none;stroke:#a69874;stroke-width:.7;opacity:.7}
+.photo_twine{position:absolute;left:-2.5%;top:34.3%;width:105%;height:6.2%;z-index:1;background:url("assets/jute-twine.webp") center/100% 100% no-repeat;filter:drop-shadow(.2cqw .65cqw .35cqw #71503245);pointer-events:none}
+.photo_bulb{position:absolute;width:1.2cqw;height:2.3cqw;z-index:2;transform:translate(-50%,-30%) rotate(var(--tilt,0deg));border-radius:45% 45% 50% 50%;background:linear-gradient(90deg,#fff3bc,#fffef0 45%,#ffe5a0);box-shadow:0 0 1.3cqw .3cqw #ffe6a5c4,0 0 4cqw 1.5cqw #ffc66135,0 0 10cqw 2.5cqw #ffcf6024;pointer-events:none}
+.photo_bulb::before{content:"";position:absolute;top:-.6cqw;left:12%;width:76%;height:.8cqw;border-radius:.2cqw;background:linear-gradient(90deg,#b4a37b,#e6d7b0,#b29e72)}
+.photo_scroll{position:absolute;inset:0;z-index:3;display:flex;gap:0;margin:0;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;cursor:grab;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .photo_scroll::-webkit-scrollbar{display:none}
 .photo_scroll:focus-visible{outline:2px solid var(--invitation-red);outline-offset:-6px}
-.photo_scroll .photo_item{flex:0 0 100%;box-sizing:border-box;scroll-snap-align:center;scroll-snap-stop:always;padding:38px 26px 27px;perspective:900px;position:relative}
-.photo_motion{transform:translateY(var(--lift,0px)) rotate(var(--scroll-lean,0deg)) rotateY(var(--turn,0deg)) scale(var(--paper-scale,1));transform-origin:50% 0;will-change:transform}
-.photo_print{position:relative;margin:0;padding:11px 11px 36px;background:#fffefa;box-shadow:1px 5px 11px #36231133,0 1px 2px #36231126;transform:rotate(var(--rest-angle,-1deg));transform-origin:50% -5px;animation-name:var(--breeze-name,paperBreezeA);animation-duration:var(--breeze-duration,11s);animation-delay:var(--breeze-delay,0s);animation-timing-function:ease-in-out;animation-iteration-count:infinite;animation-direction:var(--breeze-direction,normal);animation-play-state:paused;will-change:transform}
+.photo_scroll .photo_item{position:relative;flex:0 0 100%;width:100%;height:100%;scroll-snap-align:start;scroll-snap-stop:always;perspective:700px}
+.photo_motion{position:absolute;left:18%;top:38.2%;width:64%;filter:drop-shadow(2cqw 3cqw 1.5cqw #5d432a24)}
+.photo_print{position:relative;margin:0;padding:2cqw 2cqw 7cqw;background:linear-gradient(110deg,#fffcf6,#fdfaf4 75%,#e9e2d5);box-shadow:inset 0 0 0 .15cqw #fffdf8b0,.15cqw .25cqw .3cqw #6e553b20;transform:rotate(var(--rest-angle,-4deg));transform-origin:50% -2.4cqw;animation-name:var(--breeze-name,paperBreezeA);animation-duration:var(--breeze-duration,11s);animation-delay:var(--breeze-delay,0s);animation-timing-function:ease-in-out;animation-iteration-count:infinite;animation-direction:var(--breeze-direction,normal);animation-play-state:paused;backface-visibility:hidden}
 .photo_board.is_in_view .photo_item.is_near .photo_print{animation-play-state:running}
-.photo_print::before{content:"";position:absolute;z-index:2;top:-8px;left:calc(50% - 1px);width:2px;height:15px;border-radius:1px;background:linear-gradient(90deg,#59636b,#f1f4f5,#68747c);transform:rotate(22deg);transform-origin:50% 100%;box-shadow:1px 1px 2px #30201355}
-.photo_print::after{content:"";position:absolute;z-index:3;top:-12px;left:calc(50% - 7px);width:14px;height:11px;border:1px solid #78818a;border-radius:50%;background:radial-gradient(ellipse at 30% 20%,#ffffffdd,transparent 45%),linear-gradient(145deg,#fbfcfc 2%,#9da5aa 24%,#e4e8eb 42%,#737d84 66%,#c3c9cc 87%,#59636a);transform:rotate(-13deg);box-shadow:inset 0 1px 1px #ffffffaa,1px 3px 3px #39221066}
+.photo_print::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,#fff8e906,transparent 55%,#e3d3a80b);box-shadow:inset -.3cqw 0 .4cqw #69584108;pointer-events:none}
+.photo_clip{position:absolute;left:50%;top:-7.5cqw;width:3.3cqw;height:12.2cqw;z-index:6;transform:translateX(-50%) rotate(var(--clip-angle,8deg));background:url("assets/beech-peg.webp") center/contain no-repeat;filter:drop-shadow(.3cqw .6cqw .28cqw #5c422f45);pointer-events:none}
 @keyframes paperBreezeA{0%,100%{transform:rotate(calc(var(--rest-angle) - var(--sway)))}31%{transform:rotate(calc(var(--rest-angle) + var(--sway)*.72)) translateY(var(--float))}67%{transform:rotate(calc(var(--rest-angle) + var(--sway)*.18)) translateY(calc(var(--float)*-.35))}}
 @keyframes paperBreezeB{0%,100%{transform:rotate(calc(var(--rest-angle) + var(--sway)*.6)) translateY(calc(var(--float)*.2))}42%{transform:rotate(calc(var(--rest-angle) - var(--sway))) translateY(calc(var(--float)*-.5))}79%{transform:rotate(calc(var(--rest-angle) + var(--sway)*.25)) translateY(var(--float))}}
 @keyframes paperBreezeC{0%,100%{transform:rotate(var(--rest-angle)) translateY(calc(var(--float)*-.4))}24%{transform:rotate(calc(var(--rest-angle) - var(--sway)*.7)) translateY(var(--float))}73%{transform:rotate(calc(var(--rest-angle) + var(--sway)))}}
-.photo_image{position:relative;aspect-ratio:3/4;background:#f8f4ee;overflow:hidden}
+.photo_image{position:relative;aspect-ratio:3/4;background:#eee8de;overflow:hidden}
 .photo_image img{display:block;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .4s ease;pointer-events:none;-webkit-user-drag:none;user-select:none;-webkit-touch-callout:none}
 .photo_item.is_loaded img{opacity:1}
-.photo_item.is_current{z-index:1}
-.photo_item.is_current .photo_print{box-shadow:2px 8px 16px #53402f2b,0 1px 2px #53402f1a}
 .photo_scroll.is_dragging{scroll-snap-type:none;cursor:grabbing}
-.photo_controls{display:flex;align-items:center;justify-content:center;gap:18px;padding:0 0 16px}
+.photo_controls{position:absolute;bottom:2.8%;left:0;width:100%;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:0 5%;pointer-events:none}
 .photo_controls[hidden]{display:none}
-.photo_nav{display:grid;place-items:center;width:40px;height:40px;padding:0;border:1px solid #7e512d88;border-radius:50%;background:#fffaf0e6;color:#684529;cursor:pointer}
-.photo_nav svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.photo_nav:disabled{opacity:.3;cursor:default}
+#photoStrip .photo_nav{display:grid;place-items:center;width:52px;height:52px;padding:0;border:0;border-radius:0;background:transparent;color:var(--invitation-red);box-shadow:none;pointer-events:auto;cursor:pointer;transition:opacity .2s,transform .2s}
+#photoStrip .photo_nav svg{display:block;width:27px;height:27px;fill:currentColor;stroke:none}
+#photoStrip .photo_nav:disabled{opacity:.22;cursor:default}
+#photoStrip .photo_nav:not(:disabled):hover{transform:scale(1.12)}
+#photoStrip .photo_nav:not(:disabled):active{transform:scale(.95)}
 .photo_nav:focus-visible{outline:2px solid var(--invitation-red);outline-offset:3px}
-.photo_count{min-width:50px;font-size:12px;letter-spacing:.13em;color:#3e2717;text-align:center;font-variant-numeric:tabular-nums}
 .photo_item:not(.is_loaded) .photo_image{background-image:linear-gradient(100deg,transparent 20%,#ffffff80 50%,transparent 80%);background-size:220% 100%;animation:photoShimmer 1.6s ease-in-out infinite}
 @keyframes photoShimmer{0%{background-position:-60% 0}100%{background-position:160% 0}}
-@media(max-width:350px){.photo_board{margin:0 12px}.photo_scroll .photo_item{padding:34px 22px 25px}.photo_print{padding:9px 9px 32px}}
-@media(prefers-reduced-motion:reduce){.photo_motion,.photo_print{transform:none!important;animation:none!important;transition:none}.photo_image img{transition:none}.photo_hint svg path,.photo_item:not(.is_loaded) .photo_image{animation:none}}
+@media(prefers-reduced-motion:reduce){.photo_print{animation:none!important}.photo_image img{transition:none}.photo_item:not(.is_loaded) .photo_image{animation:none}.photo_nav{transition:none}}
 
 /* 이미지 스켈레톤
    메인 사진, 약도, 사진 스트립 모두 이미지를 받기 전에는 반짝이는 바탕 위에
@@ -12660,27 +12663,31 @@ M337.7 297.2Q333.3 297.2 331.4 293.9Q329.5 290.5 329.5 285.6Q329.5 281.6 330.6 2
                 
 
                 
-                <section class="section_photos" id="photoStrip">
+                <section class="section_photos" id="photoStrip" aria-labelledby="photoTitle">
                     <div class="inner">
-                        <div class="title">
-                            <h2>우리의 순간</h2>
-                        </div>
-                        <div class="photo_hint" id="photoHint">
-                            <span id="photoHintText">사진을 준비하고 있습니다</span>
-                            <svg viewBox="0 0 27 16" aria-hidden="true" focusable="false">
-                                <path d="m4 4 4 4-4 4"/>
-                                <path d="m11 4 4 4-4 4"/>
-                                <path d="m18 4 4 4-4 4"/>
-                            </svg>
-                        </div>
                         <div class="photo_board">
+                            <div class="photo_cloth" aria-hidden="true"></div>
+                            <div class="photo_illumination" aria-hidden="true"></div>
+                            <div class="photo_heading">
+                                <p>우리의 순간</p>
+                                <h2 id="photoTitle">Our moments</h2>
+                            </div>
+                            <svg class="photo_lights" viewBox="0 0 400 640" aria-hidden="true"><path d="M -10 188 C 72 210 92 257 185 236 S 302 191 410 206"/></svg>
+                            <div class="photo_twine" aria-hidden="true"></div>
+                            <i class="photo_bulb" aria-hidden="true" style="left:3%;top:30.4688%;--tilt:-12deg"></i>
+                            <i class="photo_bulb" aria-hidden="true" style="left:13%;top:33.9062%;--tilt:15deg"></i>
+                            <i class="photo_bulb" aria-hidden="true" style="left:24.75%;top:37.6562%;--tilt:-10deg"></i>
+                            <i class="photo_bulb" aria-hidden="true" style="left:36.75%;top:37.8125%;--tilt:12deg"></i>
+                            <i class="photo_bulb" aria-hidden="true" style="left:50.75%;top:35.9375%;--tilt:-9deg"></i>
+                            <i class="photo_bulb" aria-hidden="true" style="left:63.75%;top:32.9688%;--tilt:12deg"></i>
+                            <i class="photo_bulb" aria-hidden="true" style="left:77.75%;top:31.5625%;--tilt:-10deg"></i>
+                            <i class="photo_bulb" aria-hidden="true" style="left:91.25%;top:31.7188%;--tilt:12deg"></i>
                             <div class="photo_scroll" id="photoScroll" role="region" aria-label="우리의 순간 사진첩" aria-roledescription="캐러셀" tabindex="0" aria-busy="true">
-                                <div class="photo_item is_skeleton"><div class="photo_motion"><figure class="photo_print"><div class="photo_image"></div></figure></div></div>
+                                <div class="photo_item is_skeleton"><div class="photo_motion"><figure class="photo_print"><div class="photo_image"></div><span class="photo_clip" aria-hidden="true"></span></figure></div></div>
                             </div>
                             <div class="photo_controls" id="photoControls" hidden>
-                                <button type="button" class="photo_nav" id="photoPrev" aria-label="이전 사진" aria-controls="photoScroll"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12 4-6 6 6 6"/></svg></button>
-                                <p class="photo_count" id="photoCount" role="status" aria-live="polite"></p>
-                                <button type="button" class="photo_nav" id="photoNext" aria-label="다음 사진" aria-controls="photoScroll"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 4 6 6-6 6"/></svg></button>
+                                <button type="button" class="photo_nav" id="photoPrev" aria-label="이전 사진" aria-controls="photoScroll"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 4 5 12l12 8Z"/></svg></button>
+                                <button type="button" class="photo_nav" id="photoNext" aria-label="다음 사진" aria-controls="photoScroll"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 4 12 8-12 8Z"/></svg></button>
                             </div>
                         </div>
                     </div>
@@ -13211,19 +13218,16 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
 (function () {
     var strip = document.getElementById('photoStrip');
     var scroll = document.getElementById('photoScroll');
-    var hint = document.getElementById('photoHint');
-    var hintText = document.getElementById('photoHintText');
     var controls = document.getElementById('photoControls');
     var prev = document.getElementById('photoPrev');
     var next = document.getElementById('photoNext');
-    var count = document.getElementById('photoCount');
     if (!strip || !scroll || !controls) return;
     var photos = Array.isArray(window.WEDDING_PHOTOS) ? window.WEDDING_PHOTOS.filter(Boolean) : [];
     if (!photos.length) return;
     var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     var current = 0, frame = 0;
     var board = strip.querySelector('.photo_board');
-    var angles = [-1.05, .65, -.45, .9, -.7, .3, -.85, .5, -.25, .8, -.55, .2, -.65];
+    var angles = [-4, 3, -2.8, 2.6, -3.2, 1.8, -2.4, 3, -2, 2.8, -2.6, 1.6, -3];
     var cards = [];
     var descriptions = {
         '00-hands.jpg': '나란히 노트북을 쓰는 두 사람의 손',
@@ -13248,6 +13252,7 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         card.setAttribute('aria-roledescription', '슬라이드');
         card.setAttribute('aria-label', (i + 1) + ' / ' + photos.length);
         card.style.setProperty('--rest-angle', angles[i % angles.length] + 'deg');
+        card.style.setProperty('--clip-angle', (i % 2 ? -6 : 8) + 'deg');
         card.style.setProperty('--sway', (.19 + ((i * 7) % 9) * .027).toFixed(3) + 'deg');
         card.style.setProperty('--float', (.2 + ((i * 5) % 6) * .1).toFixed(2) + 'px');
         card.style.setProperty('--breeze-duration', (8.8 + ((i * 3.7) % 6.9)).toFixed(2) + 's');
@@ -13262,6 +13267,8 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         imageBox.className = 'photo_image';
         var image = document.createElement('img');
         image.alt = descriptions[name] || (i + 1) + '번째 추억 사진';
+        image.width = 1200;
+        image.height = 1600;
         image.loading = 'lazy';
         image.decoding = 'async';
         image.draggable = false;
@@ -13271,6 +13278,10 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         image.src = 'photos/' + encodeURIComponent(name) + '?v=20261102-wood-pin';
         imageBox.appendChild(image);
         paper.appendChild(imageBox);
+        var clip = document.createElement('span');
+        clip.className = 'photo_clip';
+        clip.setAttribute('aria-hidden', 'true');
+        paper.appendChild(clip);
         motion.appendChild(paper);
         card.appendChild(motion);
         frag.appendChild(card);
@@ -13279,8 +13290,6 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
     scroll.replaceChildren(frag);
     scroll.removeAttribute('aria-busy');
     controls.hidden = false;
-    hintText.textContent = '옆으로 넘겨보세요';
-    hint.classList.add('is_ready');
     // 화면에 보이는 가까운 사진만 각자의 주기로 살랑이게 한다.
     if ('IntersectionObserver' in window) {
         var boardObserver = new IntersectionObserver(function (entries) {
@@ -13297,16 +13306,10 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         var index = Math.max(0, Math.min(cards.length - 1, Math.round(position)));
         cards.forEach(function (card, i) {
             var distance = Math.max(-1.2, Math.min(1.2, i - position));
-            card.style.setProperty('--scroll-lean', (distance * (1.25 + ((i * 5) % 7) * .1)).toFixed(3) + 'deg');
-            card.style.setProperty('--turn', (-distance * 2).toFixed(3) + 'deg');
-            card.style.setProperty('--lift', (-Math.abs(distance) * .9).toFixed(3) + 'px');
-            card.style.setProperty('--paper-scale', (1 - Math.abs(distance) * .012).toFixed(3));
             card.classList.toggle('is_near', Math.abs(distance) < 1.15);
             card.classList.toggle('is_current', i === index);
         });
         current = index;
-        var label = (current + 1) + ' / ' + cards.length;
-        if (count.textContent !== label) count.textContent = label;
         prev.disabled = current === 0;
         next.disabled = current === cards.length - 1;
     }
@@ -13359,10 +13362,12 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
     window.addEventListener('pointerup', endDrag);
     window.addEventListener('pointercancel', endDrag);
     window.addEventListener('blur', endDrag);
-    window.addEventListener('resize', function () {
-        scroll.scrollTo({ left: current * scroll.clientWidth, behavior: 'auto' });
+    function alignWidth() {
+        scroll.scrollTo({ left: current * scroll.clientWidth, behavior: 'instant' });
         requestUpdate();
-    });
+    }
+    if ('ResizeObserver' in window) new ResizeObserver(alignWidth).observe(scroll);
+    else window.addEventListener('resize', alignWidth);
     update();
 })();
 </script>
@@ -13418,7 +13423,7 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         ['.section3 .name_con', '.section3 .introduce_con', '.section3 .relation_con'],
         ['.section4 .table_wrap', '#dday_box'],
         ['.section6 .title', '.section6 .map_box', '.section6 .top_box', '.section6 .more_view', '.section6 .transportation'],
-        ['.section_photos .title', '.section_photos .photo_hint', '.section_photos .photo_scroll'],
+        ['.section_photos .photo_board'],
         ['.section_guest_note .title', '.section_guest_note .guest_note_copy > p'],
         ['.section11 .inner']
     ];
