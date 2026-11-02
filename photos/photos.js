@@ -1,5 +1,6 @@
 // update-photos.sh 가 만드는 파일입니다. 직접 고치지 않습니다.
 window.WEDDING_PHOTOS = [
+  "00-hands.jpg",
   "01-wedding.jpg",
   "02-wedding.jpg",
   "03-wedding-black.webp",
