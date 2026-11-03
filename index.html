@@ -13228,7 +13228,7 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
 
 
 <!-- 폴라로이드 사진첩: 사진 원본은 유지하고 종이 프레임만 움직인다. -->
-<script src="photos/photos.js?v=20261102-wood-pin"></script>
+<script src="photos/photos.js?v=20261103-table"></script>
 <script>
 (function () {
     var strip = document.getElementById('photoStrip');
@@ -13257,7 +13257,8 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         '09-wedding.jpg': '노트북을 함께 보며 마주 보는 두 사람',
         '10-wedding.jpg': '창가에서 꽃다발을 들고 마주 선 두 사람',
         '11-wedding.jpg': '나란히 노트북을 든 두 사람',
-        '12-wedding.jpg': '정원에 꽃다발을 들고 선 신부'
+        '12-wedding.jpg': '정원에 꽃다발을 들고 선 신부',
+        '13-table.jpg': '꽃다발과 책이 놓인 테이블에서 서로 바라보는 두 사람'
     };
     var frag = document.createDocumentFragment();
     photos.forEach(function (name, i) {
@@ -13280,6 +13281,7 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         paper.className = 'photo_print';
         var imageBox = document.createElement('div');
         imageBox.className = 'photo_image';
+        if (name === '13-table.jpg') imageBox.style.aspectRatio = '1086 / 1330';
         var image = document.createElement('img');
         image.alt = descriptions[name] || (i + 1) + '번째 추억 사진';
         image.width = 1200;
