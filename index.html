@@ -10632,6 +10632,10 @@ em.space {
 .photo_board.is_in_view .photo_item.is_near .photo_print{animation-play-state:running}
 .photo_print::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,#fff8e906,transparent 55%,#e3d3a80b);box-shadow:inset -.3cqw 0 .4cqw #69584108;pointer-events:none}
 .photo_clip{position:absolute;left:50%;top:-7.5cqw;width:3.3cqw;height:12.2cqw;z-index:6;transform:translateX(-50%) rotate(var(--clip-angle,8deg));background:url("assets/beech-peg.webp") center/contain no-repeat;filter:drop-shadow(.3cqw .6cqw .28cqw #5c422f45);pointer-events:none}
+.photo_pair .photo_motion{left:4%;width:92%;display:flex;align-items:flex-start;justify-content:center;gap:6cqw;filter:none}
+.photo_pair .photo_print{flex:1 1 0;min-width:0;width:0;padding:1.5cqw 1.5cqw 4.5cqw;filter:drop-shadow(1cqw 2cqw 1cqw #5d432a24)}
+.photo_pair .photo_image{width:100%;height:auto;aspect-ratio:3/4}
+.photo_pair .photo_image img{object-fit:cover}
 @keyframes paperBreezeA{0%,100%{transform:rotate(calc(var(--rest-angle) - var(--sway)))}31%{transform:rotate(calc(var(--rest-angle) + var(--sway)*.72)) translateY(var(--float))}67%{transform:rotate(calc(var(--rest-angle) + var(--sway)*.18)) translateY(calc(var(--float)*-.35))}}
 @keyframes paperBreezeB{0%,100%{transform:rotate(calc(var(--rest-angle) + var(--sway)*.6)) translateY(calc(var(--float)*.2))}42%{transform:rotate(calc(var(--rest-angle) - var(--sway))) translateY(calc(var(--float)*-.5))}79%{transform:rotate(calc(var(--rest-angle) + var(--sway)*.25)) translateY(var(--float))}}
 @keyframes paperBreezeC{0%,100%{transform:rotate(var(--rest-angle)) translateY(calc(var(--float)*-.4))}24%{transform:rotate(calc(var(--rest-angle) - var(--sway)*.7)) translateY(var(--float))}73%{transform:rotate(calc(var(--rest-angle) + var(--sway)))}}
@@ -13260,46 +13264,61 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         '12-wedding.jpg': '정원에 꽃다발을 들고 선 신부',
         '13-table.jpg': '꽃다발과 책이 놓인 테이블에서 서로 바라보는 두 사람'
     };
+    var pairLeft = '13-table.jpg', pairRight = '02-wedding.jpg';
+    var hasTablePair = photos.indexOf(pairLeft) !== -1 && photos.indexOf(pairRight) !== -1;
+    var slides = [];
+    photos.forEach(function (name) {
+        if (hasTablePair && name === pairLeft) return;
+        slides.push(hasTablePair && name === pairRight ? [pairLeft, pairRight] : [name]);
+    });
     var frag = document.createDocumentFragment();
-    photos.forEach(function (name, i) {
+    slides.forEach(function (names, i) {
+        var isPair = names.length === 2;
         var card = document.createElement('div');
-        card.className = 'photo_item';
+        card.className = 'photo_item' + (isPair ? ' photo_pair' : '');
         card.setAttribute('role', 'group');
         card.setAttribute('aria-roledescription', '슬라이드');
-        card.setAttribute('aria-label', (i + 1) + ' / ' + photos.length);
-        card.style.setProperty('--rest-angle', angles[i % angles.length] + 'deg');
-        card.style.setProperty('--clip-angle', (i % 2 ? -6 : 8) + 'deg');
-        card.style.setProperty('--sway', (.19 + ((i * 7) % 9) * .027).toFixed(3) + 'deg');
-        card.style.setProperty('--float', (.2 + ((i * 5) % 6) * .1).toFixed(2) + 'px');
-        card.style.setProperty('--breeze-duration', (8.8 + ((i * 3.7) % 6.9)).toFixed(2) + 's');
-        card.style.setProperty('--breeze-delay', (-i * 1.93 - 3.2).toFixed(2) + 's');
-        card.style.setProperty('--breeze-name', ['paperBreezeA', 'paperBreezeB', 'paperBreezeC'][i % 3]);
-        card.style.setProperty('--breeze-direction', i % 3 === 1 ? 'reverse' : 'normal');
+        card.setAttribute('aria-label', (i + 1) + ' / ' + slides.length + (isPair ? ', 한 쌍의 사진' : ''));
         var motion = document.createElement('div');
         motion.className = 'photo_motion';
-        var paper = document.createElement('figure');
-        paper.className = 'photo_print';
-        var imageBox = document.createElement('div');
-        imageBox.className = 'photo_image';
-        if (name === '13-table.jpg') imageBox.style.aspectRatio = '1086 / 1330';
-        var image = document.createElement('img');
-        image.alt = descriptions[name] || (i + 1) + '번째 추억 사진';
-        image.width = 1200;
-        image.height = 1600;
-        image.loading = 'lazy';
-        image.decoding = 'async';
-        image.draggable = false;
-        function ready() { card.classList.add('is_loaded'); }
-        image.addEventListener('load', ready);
-        image.addEventListener('error', ready);
-        image.src = 'photos/' + encodeURIComponent(name) + '?v=20261102-wood-pin';
-        imageBox.appendChild(image);
-        paper.appendChild(imageBox);
-        var clip = document.createElement('span');
-        clip.className = 'photo_clip';
-        clip.setAttribute('aria-hidden', 'true');
-        paper.appendChild(clip);
-        motion.appendChild(paper);
+        var remaining = names.length;
+        names.forEach(function (name, side) {
+            var paper = document.createElement('figure');
+            paper.className = 'photo_print';
+            var variation = i + side * 3;
+            paper.style.setProperty('--rest-angle', (isPair ? (side ? 1.2 : -1.2) : angles[i % angles.length]) + 'deg');
+            paper.style.setProperty('--clip-angle', ((i + side) % 2 ? -6 : 8) + 'deg');
+            paper.style.setProperty('--sway', (.19 + ((variation * 7) % 9) * .027).toFixed(3) + 'deg');
+            paper.style.setProperty('--float', (.2 + ((variation * 5) % 6) * .1).toFixed(2) + 'px');
+            paper.style.setProperty('--breeze-duration', (8.8 + ((variation * 3.7) % 6.9)).toFixed(2) + 's');
+            paper.style.setProperty('--breeze-delay', (-variation * 1.93 - 3.2).toFixed(2) + 's');
+            paper.style.setProperty('--breeze-name', ['paperBreezeA', 'paperBreezeB', 'paperBreezeC'][variation % 3]);
+            paper.style.setProperty('--breeze-direction', variation % 3 === 1 ? 'reverse' : 'normal');
+            var imageBox = document.createElement('div');
+            imageBox.className = 'photo_image';
+            if (!isPair && name === '13-table.jpg') imageBox.style.aspectRatio = '1086 / 1330';
+            var image = document.createElement('img');
+            image.alt = descriptions[name] || (i + 1) + '번째 추억 사진';
+            image.width = 1200;
+            image.height = 1600;
+            image.loading = 'lazy';
+            image.decoding = 'async';
+            image.draggable = false;
+            function ready() {
+                remaining -= 1;
+                if (!remaining) card.classList.add('is_loaded');
+            }
+            image.addEventListener('load', ready);
+            image.addEventListener('error', ready);
+            image.src = 'photos/' + encodeURIComponent(name) + '?v=20261102-wood-pin';
+            imageBox.appendChild(image);
+            paper.appendChild(imageBox);
+            var clip = document.createElement('span');
+            clip.className = 'photo_clip';
+            clip.setAttribute('aria-hidden', 'true');
+            paper.appendChild(clip);
+            motion.appendChild(paper);
+        });
         card.appendChild(motion);
         frag.appendChild(card);
         cards.push(card);
