@@ -27,6 +27,5 @@ window.WEDDING_PHOTOS = [
   "22-garden-pair-left.jpg",
   "23-garden-pair-right.jpg",
   "24-garden-collage.jpg",
-  "25-studio-white.jpg",
-  "26-studio-lace.jpg"
+  "25-studio-white.jpg"
 ];
