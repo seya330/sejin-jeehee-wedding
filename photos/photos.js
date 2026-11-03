@@ -25,5 +25,6 @@ window.WEDDING_PHOTOS = [
   "20-garden-bride.jpg",
   "21-garden-bride-front.jpg",
   "22-garden-pair-left.jpg",
-  "23-garden-pair-right.jpg"
+  "23-garden-pair-right.jpg",
+  "24-garden-collage.jpg"
 ];
