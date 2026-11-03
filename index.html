@@ -10636,6 +10636,7 @@ em.space {
 .photo_pair .photo_print{flex:var(--pair-weight,1) 1 0;min-width:0;width:0;padding:1.5cqw 1.5cqw 4.5cqw;filter:drop-shadow(1cqw 2cqw 1cqw #5d432a24)}
 .photo_pair .photo_image{width:100%;height:auto;aspect-ratio:3/4}
 .photo_pair .photo_image img{object-fit:cover}
+.photo_evening .photo_image img{filter:brightness(.76) contrast(1.08) saturate(1.14) hue-rotate(-8deg)}
 @keyframes paperBreezeA{0%,100%{transform:rotate(calc(var(--rest-angle) - var(--sway)))}31%{transform:rotate(calc(var(--rest-angle) + var(--sway)*.72)) translateY(var(--float))}67%{transform:rotate(calc(var(--rest-angle) + var(--sway)*.18)) translateY(calc(var(--float)*-.35))}}
 @keyframes paperBreezeB{0%,100%{transform:rotate(calc(var(--rest-angle) + var(--sway)*.6)) translateY(calc(var(--float)*.2))}42%{transform:rotate(calc(var(--rest-angle) - var(--sway))) translateY(calc(var(--float)*-.5))}79%{transform:rotate(calc(var(--rest-angle) + var(--sway)*.25)) translateY(var(--float))}}
 @keyframes paperBreezeC{0%,100%{transform:rotate(var(--rest-angle)) translateY(calc(var(--float)*-.4))}24%{transform:rotate(calc(var(--rest-angle) - var(--sway)*.7)) translateY(var(--float))}73%{transform:rotate(calc(var(--rest-angle) + var(--sway)))}}
@@ -13311,7 +13312,7 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
     slides.forEach(function (names, i) {
         var isPair = names.length === 2;
         var card = document.createElement('div');
-        card.className = 'photo_item' + (isPair ? ' photo_pair' : '');
+        card.className = 'photo_item' + (isPair ? ' photo_pair' : '') + (pairSizes[names[0]] ? ' photo_evening' : '');
         card.setAttribute('role', 'group');
         card.setAttribute('aria-roledescription', '슬라이드');
         card.setAttribute('aria-label', (i + 1) + ' / ' + slides.length + (isPair ? ', 한 쌍의 사진' : ''));
