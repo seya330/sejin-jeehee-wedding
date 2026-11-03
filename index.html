@@ -10633,7 +10633,7 @@ em.space {
 .photo_print::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,#fff8e906,transparent 55%,#e3d3a80b);box-shadow:inset -.3cqw 0 .4cqw #69584108;pointer-events:none}
 .photo_clip{position:absolute;left:50%;top:-7.5cqw;width:3.3cqw;height:12.2cqw;z-index:6;transform:translateX(-50%) rotate(var(--clip-angle,8deg));background:url("assets/beech-peg.webp") center/contain no-repeat;filter:drop-shadow(.3cqw .6cqw .28cqw #5c422f45);pointer-events:none}
 .photo_pair .photo_motion{left:4%;width:92%;display:flex;align-items:flex-start;justify-content:center;gap:6cqw;filter:none}
-.photo_pair .photo_print{flex:1 1 0;min-width:0;width:0;padding:1.5cqw 1.5cqw 4.5cqw;filter:drop-shadow(1cqw 2cqw 1cqw #5d432a24)}
+.photo_pair .photo_print{flex:var(--pair-weight,1) 1 0;min-width:0;width:0;padding:1.5cqw 1.5cqw 4.5cqw;filter:drop-shadow(1cqw 2cqw 1cqw #5d432a24)}
 .photo_pair .photo_image{width:100%;height:auto;aspect-ratio:3/4}
 .photo_pair .photo_image img{object-fit:cover}
 @keyframes paperBreezeA{0%,100%{transform:rotate(calc(var(--rest-angle) - var(--sway)))}31%{transform:rotate(calc(var(--rest-angle) + var(--sway)*.72)) translateY(var(--float))}67%{transform:rotate(calc(var(--rest-angle) + var(--sway)*.18)) translateY(calc(var(--float)*-.35))}}
@@ -13232,7 +13232,7 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
 
 
 <!-- 폴라로이드 사진첩: 사진 원본은 유지하고 종이 프레임만 움직인다. -->
-<script src="photos/photos.js?v=20261103-table-pair"></script>
+<script src="photos/photos.js?v=20261103-pairs-mood"></script>
 <script>
 (function () {
     var strip = document.getElementById('photoStrip');
@@ -13263,14 +13263,49 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         '11-wedding.jpg': '나란히 노트북을 든 두 사람',
         '12-wedding.jpg': '정원에 꽃다발을 들고 선 신부',
         '13-table.jpg': '꽃다발과 책이 놓인 테이블에서 서로 바라보는 두 사람',
-        '14-groom-sleeve.jpg': '소파에 앉아 셔츠 소매를 걷는 신랑'
+        '14-groom-sleeve.jpg': '소파에 앉아 셔츠 소매를 걷는 신랑',
+        '15-prayer-pair-left.jpg': '기도하는 신랑을 장난스럽게 바라보는 신부',
+        '15-prayer-pair-right.jpg': '촛불 앞에서 두 손을 모으고 눈을 감은 신랑',
+        '16-prayer-pair-left.jpg': '촛불 앞에서 두 손을 모으고 눈을 감은 신부',
+        '16-prayer-pair-right.jpg': '기도하는 신부를 장난스럽게 바라보는 신랑',
+        '17-bride-bouquet.jpg': '소파에 앉아 보랏빛 꽃다발을 내려다보는 신부'
     };
-    var pairLeft = '02-wedding.jpg', pairRight = '14-groom-sleeve.jpg';
-    var hasPhotoPair = photos.indexOf(pairLeft) !== -1 && photos.indexOf(pairRight) !== -1;
+    // 밝은 실내에서 야외, 따뜻한 저녁 장면으로 이어지는 순서.
+    var photoOrder = [
+        '00-hands.jpg',
+        '06-wedding.jpg', '13-table.jpg', '17-bride-bouquet.jpg',
+        '02-wedding.jpg', '14-groom-sleeve.jpg', '10-wedding.jpg',
+        '01-wedding.jpg', '05-wedding.jpg',
+        '03-wedding-black.webp', '04-wedding-black.webp',
+        '07-wedding.jpg', '12-wedding.jpg',
+        '08-wedding-black.webp', '09-wedding.jpg', '11-wedding.jpg',
+        '15-prayer-pair-left.jpg', '15-prayer-pair-right.jpg',
+        '16-prayer-pair-left.jpg', '16-prayer-pair-right.jpg'
+    ];
+    photos = photoOrder.filter(function (name) { return photos.indexOf(name) !== -1; })
+        .concat(photos.filter(function (name) { return photoOrder.indexOf(name) === -1; }));
+    var photoPairs = [
+        ['02-wedding.jpg', '14-groom-sleeve.jpg'],
+        ['15-prayer-pair-left.jpg', '15-prayer-pair-right.jpg'],
+        ['16-prayer-pair-left.jpg', '16-prayer-pair-right.jpg']
+    ];
+    // PPT의 사진 비율을 유지하고 같은 쌍의 인쇄물 높이를 맞춘다.
+    var pairSizes = {
+        '15-prayer-pair-left.jpg': [504, 870],
+        '15-prayer-pair-right.jpg': [800, 918],
+        '16-prayer-pair-left.jpg': [923, 1704],
+        '16-prayer-pair-right.jpg': [874, 1168]
+    };
+    var pairStarts = Object.create(null), pairEnds = Object.create(null);
+    photoPairs.forEach(function (pair) {
+        if (pair.every(function (name) { return photos.indexOf(name) !== -1; })) {
+            pairStarts[pair[0]] = pair;
+            pairEnds[pair[1]] = true;
+        }
+    });
     var slides = [];
     photos.forEach(function (name) {
-        if (hasPhotoPair && name === pairRight) return;
-        slides.push(hasPhotoPair && name === pairLeft ? [pairLeft, pairRight] : [name]);
+        if (!pairEnds[name]) slides.push(pairStarts[name] || [name]);
     });
     var frag = document.createDocumentFragment();
     slides.forEach(function (names, i) {
@@ -13286,6 +13321,8 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         names.forEach(function (name, side) {
             var paper = document.createElement('figure');
             paper.className = 'photo_print';
+            var pairSize = isPair && pairSizes[name];
+            if (pairSize) paper.style.setProperty('--pair-weight', pairSize[0] / pairSize[1]);
             var variation = i + side * 3;
             paper.style.setProperty('--rest-angle', (isPair ? (side ? 1.2 : -1.2) : angles[i % angles.length]) + 'deg');
             paper.style.setProperty('--clip-angle', ((i + side) % 2 ? -6 : 8) + 'deg');
@@ -13297,6 +13334,7 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
             paper.style.setProperty('--breeze-direction', variation % 3 === 1 ? 'reverse' : 'normal');
             var imageBox = document.createElement('div');
             imageBox.className = 'photo_image';
+            if (pairSize) imageBox.style.aspectRatio = pairSize[0] + ' / ' + pairSize[1];
             if (!isPair && name === '13-table.jpg') imageBox.style.aspectRatio = '1086 / 1330';
             var image = document.createElement('img');
             image.alt = descriptions[name] || (i + 1) + '번째 추억 사진';
