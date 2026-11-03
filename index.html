@@ -13266,7 +13266,7 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         '13-table.jpg': '꽃다발과 책이 놓인 테이블에서 서로 바라보는 두 사람',
         '14-groom-sleeve.jpg': '소파에 앉아 셔츠 소매를 걷는 신랑',
         '15-prayer-pair-left.jpg': '기도하는 신랑을 장난스럽게 바라보는 신부',
-        '15-prayer-pair-right.jpg': '촛불 앞에서 두 손을 모으고 눈을 감은 신랑',
+        '15-prayer-pair-right.jpg': '촛불과 꽃다발 앞에서 눈을 감고 기도하는 신랑',
         '16-prayer-pair-left.jpg': '촛불 앞에서 두 손을 모으고 눈을 감은 신부',
         '16-prayer-pair-right.jpg': '기도하는 신부를 장난스럽게 바라보는 신랑',
         '17-bride-bouquet.jpg': '소파에 앉아 보랏빛 꽃다발을 내려다보는 신부',
@@ -13303,7 +13303,7 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
     // PPT의 사진 비율을 유지하고 같은 쌍의 인쇄물 높이를 맞춘다.
     var pairSizes = {
         '15-prayer-pair-left.jpg': [504, 870],
-        '15-prayer-pair-right.jpg': [800, 918],
+        '15-prayer-pair-right.jpg': [911, 1280],
         '16-prayer-pair-left.jpg': [923, 1704],
         '16-prayer-pair-right.jpg': [874, 1168]
     };
@@ -13357,7 +13357,8 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
             image.draggable = false;
             var source = name === '07-wedding.jpg'
                 ? 'assets/gallery-bride-bouquet.jpg?v=20261103-bride-image-fix'
-                : 'photos/' + encodeURIComponent(name) + '?v=20261102-wood-pin';
+                : 'photos/' + encodeURIComponent(name) + '?v='
+                    + (name === '15-prayer-pair-right.jpg' ? '20261103-groom-prayer' : '20261102-wood-pin');
             var settled = false, retried = false;
             function ready() {
                 if (settled) return;
