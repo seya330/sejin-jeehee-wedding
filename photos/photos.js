@@ -19,5 +19,7 @@ window.WEDDING_PHOTOS = [
   "15-prayer-pair-right.jpg",
   "16-prayer-pair-left.jpg",
   "16-prayer-pair-right.jpg",
-  "17-bride-bouquet.jpg"
+  "17-bride-bouquet.jpg",
+  "18-garden-seated.jpg",
+  "19-garden-standing.jpg"
 ];
