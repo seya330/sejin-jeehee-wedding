@@ -13232,7 +13232,7 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
 
 
 <!-- 폴라로이드 사진첩: 사진 원본은 유지하고 종이 프레임만 움직인다. -->
-<script src="photos/photos.js?v=20261103-table"></script>
+<script src="photos/photos.js?v=20261103-table-pair"></script>
 <script>
 (function () {
     var strip = document.getElementById('photoStrip');
@@ -13262,14 +13262,15 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
         '10-wedding.jpg': '창가에서 꽃다발을 들고 마주 선 두 사람',
         '11-wedding.jpg': '나란히 노트북을 든 두 사람',
         '12-wedding.jpg': '정원에 꽃다발을 들고 선 신부',
-        '13-table.jpg': '꽃다발과 책이 놓인 테이블에서 서로 바라보는 두 사람'
+        '13-table.jpg': '꽃다발과 책이 놓인 테이블에서 서로 바라보는 두 사람',
+        '14-groom-sleeve.jpg': '소파에 앉아 셔츠 소매를 걷는 신랑'
     };
-    var pairLeft = '13-table.jpg', pairRight = '02-wedding.jpg';
+    var pairLeft = '13-table.jpg', pairRight = '14-groom-sleeve.jpg';
     var hasTablePair = photos.indexOf(pairLeft) !== -1 && photos.indexOf(pairRight) !== -1;
     var slides = [];
     photos.forEach(function (name) {
-        if (hasTablePair && name === pairLeft) return;
-        slides.push(hasTablePair && name === pairRight ? [pairLeft, pairRight] : [name]);
+        if (hasTablePair && name === pairRight) return;
+        slides.push(hasTablePair && name === pairLeft ? [pairLeft, pairRight] : [name]);
     });
     var frag = document.createDocumentFragment();
     slides.forEach(function (names, i) {
