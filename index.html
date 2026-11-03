@@ -13233,7 +13233,7 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
 
 
 <!-- 폴라로이드 사진첩: 사진 원본은 유지하고 종이 프레임만 움직인다. -->
-<script src="photos/photos.js?v=20261103-bride-pair"></script>
+<script src="photos/photos.js?v=20261103-bride-image-fix"></script>
 <script>
 (function () {
     var strip = document.getElementById('photoStrip');
@@ -13351,13 +13351,25 @@ const a89_0x729279=a89_0x1268;(function(_0x1c2c91,_0x4357cd){const _0x147be4=a89
             image.loading = 'lazy';
             image.decoding = 'async';
             image.draggable = false;
+            var source = name === '07-wedding.jpg'
+                ? 'assets/gallery-bride-bouquet.jpg?v=20261103-bride-image-fix'
+                : 'photos/' + encodeURIComponent(name) + '?v=20261102-wood-pin';
+            var settled = false, retried = false;
             function ready() {
+                if (settled) return;
+                settled = true;
                 remaining -= 1;
                 if (!remaining) card.classList.add('is_loaded');
             }
             image.addEventListener('load', ready);
-            image.addEventListener('error', ready);
-            image.src = 'photos/' + encodeURIComponent(name) + '?v=20261102-wood-pin';
+            image.addEventListener('error', function () {
+                if (settled) return;
+                if (!retried) {
+                    retried = true;
+                    image.src = source + '&retry=1';
+                } else ready();
+            });
+            image.src = source;
             imageBox.appendChild(image);
             paper.appendChild(imageBox);
             var clip = document.createElement('span');
